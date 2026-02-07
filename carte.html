@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carte Chasse au Trésor</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            background: #000;
+        }
+        
+        #map-container {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+            background: #1a1a1a;
+        }
+        
+        #map {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            cursor: grab;
+            background: #1a1a1a;
+        }
+        
+        #map:active {
+            cursor: grabbing;
+        }
+        
+        .map-tile {
+            position: absolute;
+            width: 256px;
+            height: 256px;
+        }
+        
+        /* Titre */
+        .titre-carte {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            font-size: 26px;
+            font-weight: bold;
+            color: #fff;
+            border: 2px solid #2ecc71;
+        }
+        
+        /* Contrôles */
+        .controls {
+            position: absolute;
+            top: 100px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.5);
+            border: 2px solid #444;
+        }
+        
+        .btn-layer {
+            display: block;
+            width: 100%;
+            background: #2c3e50;
+            border: 2px solid #34495e;
+            color: white;
+            padding: 12px 20px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .btn-layer:last-child {
+            margin-bottom: 0;
+        }
+        
+        .btn-layer:hover {
+            background: #3498db;
+            border-color: #3498db;
+            transform: translateY(-2px);
+        }
+        
+        .btn-layer.active {
+            background: #2ecc71;
+            border-color: #27ae60;
+        }
+        
+        /* Zoom controls */
+        .zoom-controls {
+            position: absolute;
+            top: 220px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.5);
+            border: 2px solid #444;
+        }
+        
+        .zoom-btn {
+            display: block;
+            width: 50px;
+            height: 50px;
+            background: #2c3e50;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .zoom-btn:hover {
+            background: #3498db;
+        }
+        
+        .zoom-btn:first-child {
+            border-bottom: 2px solid #444;
+        }
+        
+        /* Niveau de zoom */
+        .zoom-level {
+            position: absolute;
+            top: 340px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.8);
+            color: #2ecc71;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            border: 2px solid #444;
+        }
+        
+        /* Marqueurs */
+        .marker {
+            position: absolute;
+            transform: translate(-50%, -100%);
+            z-index: 500;
+            cursor: pointer;
+            transition: transform 0.3s;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .marker.visible {
+            opacity: 1;
+            pointer-events: auto;
+            animation: markerAppear 0.5s ease-out;
+        }
+        
+        @keyframes markerAppear {
+            0% {
+                transform: translate(-50%, -100%) scale(0);
+            }
+            50% {
+                transform: translate(-50%, -100%) scale(1.3);
+            }
+            100% {
+                transform: translate(-50%, -100%) scale(1);
+            }
+        }
+        
+        .marker:hover {
+            transform: translate(-50%, -100%) scale(1.3);
+            z-index: 600;
+        }
+        
+        .marker-icon {
+            font-size: 40px;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.8));
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                filter: drop-shadow(0 4px 8px rgba(46,204,113,0.8));
+            }
+            50% {
+                filter: drop-shadow(0 4px 15px rgba(46,204,113,1));
+            }
+        }
+        
+        /* Popup */
+        .popup {
+            position: absolute;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.7);
+            max-width: 300px;
+            z-index: 1000;
+            display: none;
+            border: 3px solid #2ecc71;
+        }
+        
+        .popup.active {
+            display: block;
+            animation: popupAppear 0.3s ease-out;
+        }
+        
+        @keyframes popupAppear {
+            0% {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .popup h3 {
+            margin: 0 0 15px 0;
+            color: #fff;
+            font-size: 20px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .popup p {
+            margin: 0 0 15px 0;
+            color: #ecf0f1;
+            line-height: 1.6;
+        }
+        
+        .popup a {
+            display: inline-block;
+            background: #2ecc71;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(46,204,113,0.3);
+        }
+        
+        .popup a:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(46,204,113,0.5);
+        }
+        
+        .popup-close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #ecf0f1;
+            transition: color 0.3s;
+        }
+        
+        .popup-close:hover {
+            color: #e74c3c;
+        }
+        
+        /* Instructions */
+        .instructions {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-size: 14px;
+            z-index: 1000;
+            border: 2px solid #2ecc71;
+            text-align: center;
+        }
+        
+        .instructions strong {
+            color: #2ecc71;
+        }
+    </style>
+</head>
+<body>
+    <div id="map-container">
+        <div class="titre-carte">🌍 Chasse au Trésor Mondiale</div>
+        
+        <div class="controls">
+            <button class="btn-layer" id="btn-osm">🗺️ Carte</button>
+            <button class="btn-layer active" id="btn-satellite">🛰️ Satellite</button>
+        </div>
+        
+        <div class="zoom-controls">
+            <button class="zoom-btn" id="zoom-in">+</button>
+            <button class="zoom-btn" id="zoom-out">−</button>
+        </div>
+        
+        <div class="zoom-level">
+            Zoom: <span id="zoom-display">3</span> / 15 minimum
+        </div>
+        
+        <div class="instructions">
+            🖱️ Glissez pour explorer | 🔍 <strong>Zoomez au niveau 15</strong> pour découvrir les trésors
+        </div>
+        
+        <div id="map"></div>
+        
+        <div id="popup" class="popup">
+            <button class="popup-close" id="popup-close">×</button>
+            <div id="popup-content"></div>
+        </div>
+    </div>
+
+    <script>
+        // ===== CONFIGURATION =====
+        const mapContainer = document.getElementById('map');
+        const popup = document.getElementById('popup');
+        const popupContent = document.getElementById('popup-content');
+        const popupClose = document.getElementById('popup-close');
+        const zoomDisplay = document.getElementById('zoom-display');
+        
+        let currentLayer = 'satellite';
+        let zoom = 3; // Commence avec vue monde
+        let centerLat = 20; // Centre sur le monde
+        let centerLng = 0;
+        let isDragging = false;
+        let startX, startY;
+        let translateX = 0, translateY = 0;
+        
+        const ZOOM_MIN_POUR_TRESORS = 15; // Les trésors apparaissent au zoom 15
+        
+        // ===== VOS TRÉSORS =====
+        // Format: lat, lng, icon, titre, description, lien_video
+        const tresors = [
+            {
+                lat: 27.988056,
+                lng: 86.925278,
+                icon: '👑',
+                titre: 'Le Toit du Monde',
+                description: '🏔️ Mont Everest - 8,849m<br><i>"Bitcoin c\'est le roi, tu le trouveras sur le toit"</i>',
+                video: 'https://www.youtube.com/watch?v=VOTRE_VIDEO_EVEREST'
+            },
+            {
+                lat: 25.112222,
+                lng: 55.138889,
+                icon: '🌴',
+                titre: 'Les Palmiers Artificiels',
+                description: '🏝️ Palm Jumeirah - Dubaï<br><i>Un archipel en forme de palmier visible de l\'espace</i>',
+                video: 'https://www.youtube.com/watch?v=VOTRE_VIDEO_DUBAI'
+            },
+            {
+                lat: -14.739444,
+                lng: -75.133333,
+                icon: '🐵',
+                titre: 'Le Singe de Nazca',
+                description: '🗿 Lignes de Nazca - Pérou<br><i>Géoglyphe mystérieux de 2000 ans</i>',
+                video: 'https://www.youtube.com/watch?v=VOTRE_VIDEO_NAZCA'
+            },
+            {
+                lat: 32.133333,
+                lng: -110.95,
+                icon: '✈️',
+                titre: 'L\'Avion du Désert',
+                description: '🏜️ Cimetière d\'avions - Arizona<br><i>Des milliers d\'avions abandonnés dans le désert</i>',
+                video: 'https://www.youtube.com/watch?v=VOTRE_VIDEO_AVION'
+            }
+            // AJOUTEZ VOS AUTRES TRÉSORS ICI !
+        ];
+        
+        // ===== FONCTIONS DE CONVERSION =====
+        function latLngToPixel(lat, lng, zoom) {
+            const scale = Math.pow(2, zoom);
+            const worldWidth = 256 * scale;
+            
+            const x = (lng + 180) / 360 * worldWidth;
+            const latRad = lat * Math.PI / 180;
+            const mercN = Math.log(Math.tan((Math.PI / 4) + (latRad / 2)));
+            const y = (worldWidth / 2) - (worldWidth * mercN / (2 * Math.PI));
+            
+            return { x, y };
+        }
+        
+        function getTileUrl(x, y, z, layer) {
+            if (layer === 'osm') {
+                const s = ['a', 'b', 'c'][Math.abs(x + y) % 3];
+                return `https://${s}.tile.openstreetmap.org/${z}/${x}/${y}.png`;
+            } else {
+                // Satellite Esri/ArcGIS
+                return `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}`;
+            }
+        }
+        
+        // ===== RENDU DE LA CARTE =====
+        function renderMap() {
+            mapContainer.innerHTML = '';
+            zoomDisplay.textContent = zoom;
+            
+            const containerWidth = mapContainer.offsetWidth;
+            const containerHeight = mapContainer.offsetHeight;
+            
+            const centerPixel = latLngToPixel(centerLat, centerLng, zoom);
+            const scale = Math.pow(2, zoom);
+            
+            const centerTileX = Math.floor(centerPixel.x / 256);
+            const centerTileY = Math.floor(centerPixel.y / 256);
+            
+            const offsetX = (containerWidth / 2) - (centerPixel.x % 256) + translateX;
+            const offsetY = (containerHeight / 2) - (centerPixel.y % 256) + translateY;
+            
+            const tilesX = Math.ceil(containerWidth / 256) + 2;
+            const tilesY = Math.ceil(containerHeight / 256) + 2;
+            
+            const startTileX = centerTileX - Math.floor(tilesX / 2);
+            const startTileY = centerTileY - Math.floor(tilesY / 2);
+            
+            // Afficher les tuiles
+            for (let i = 0; i < tilesX; i++) {
+                for (let j = 0; j < tilesY; j++) {
+                    const tileX = startTileX + i;
+                    const tileY = startTileY + j;
+                    
+                    if (tileX >= 0 && tileY >= 0 && tileX < scale && tileY < scale) {
+                        const tile = document.createElement('img');
+                        tile.className = 'map-tile';
+                        tile.src = getTileUrl(tileX, tileY, zoom, currentLayer);
+                        tile.style.left = (offsetX + (i - 1) * 256) + 'px';
+                        tile.style.top = (offsetY + (j - 1) * 256) + 'px';
+                        tile.draggable = false;
+                        
+                        // Gestion d'erreur de chargement
+                        tile.onerror = function() {
+                            this.style.background = '#2c3e50';
+                        };
+                        
+                        mapContainer.appendChild(tile);
+                    }
+                }
+            }
+            
+            // Afficher les marqueurs SEULEMENT si zoom >= 15
+            if (zoom >= ZOOM_MIN_POUR_TRESORS) {
+                tresors.forEach((tresor, index) => {
+                    const pixel = latLngToPixel(tresor.lat, tresor.lng, zoom);
+                    const markerX = (containerWidth / 2) + (pixel.x - centerPixel.x) + translateX;
+                    const markerY = (containerHeight / 2) + (pixel.y - centerPixel.y) + translateY;
+                    
+                    const marker = document.createElement('div');
+                    marker.className = 'marker visible';
+                    marker.innerHTML = `<div class="marker-icon">${tresor.icon}</div>`;
+                    marker.style.left = markerX + 'px';
+                    marker.style.top = markerY + 'px';
+                    marker.onclick = (e) => {
+                        e.stopPropagation();
+                        showPopup(tresor, markerX, markerY);
+                    };
+                    mapContainer.appendChild(marker);
+                });
+            }
+        }
+        
+        // ===== POPUP =====
+        function showPopup(tresor, x, y) {
+            popupContent.innerHTML = `
+                <h3>${tresor.icon} ${tresor.titre}</h3>
+                <p>${tresor.description}</p>
+                <a href="${tresor.video}" target="_blank">🎬 Voir la vidéo</a>
+            `;
+            popup.style.left = Math.min(x + 10, window.innerWidth - 320) + 'px';
+            popup.style.top = Math.max(y - 150, 20) + 'px';
+            popup.classList.add('active');
+        }
+        
+        popupClose.onclick = () => {
+            popup.classList.remove('active');
+        };
+        
+        // Fermer popup si on clique sur la carte
+        mapContainer.onclick = () => {
+            popup.classList.remove('active');
+        };
+        
+        // ===== CONTRÔLES =====
+        document.getElementById('btn-osm').onclick = () => {
+            currentLayer = 'osm';
+            document.getElementById('btn-osm').classList.add('active');
+            document.getElementById('btn-satellite').classList.remove('active');
+            renderMap();
+        };
+        
+        document.getElementById('btn-satellite').onclick = () => {
+            currentLayer = 'satellite';
+            document.getElementById('btn-satellite').classList.add('active');
+            document.getElementById('btn-osm').classList.remove('active');
+            renderMap();
+        };
+        
+        document.getElementById('zoom-in').onclick = () => {
+            if (zoom < 18) {
+                zoom++;
+                renderMap();
+            }
+        };
+        
+        document.getElementById('zoom-out').onclick = () => {
+            if (zoom > 2) {
+                zoom--;
+                renderMap();
+            }
+        };
+        
+        // ===== DÉPLACEMENT =====
+        mapContainer.onmousedown = (e) => {
+            if (e.target === mapContainer || e.target.classList.contains('map-tile')) {
+                isDragging = true;
+                startX = e.clientX - translateX;
+                startY = e.clientY - translateY;
+            }
+        };
+        
+        document.onmousemove = (e) => {
+            if (isDragging) {
+                translateX = e.clientX - startX;
+                translateY = e.clientY - startY;
+                renderMap();
+            }
+        };
+        
+        document.onmouseup = () => {
+            isDragging = false;
+        };
+        
+        // ===== ZOOM MOLETTE =====
+        mapContainer.onwheel = (e) => {
+            e.preventDefault();
+            if (e.deltaY < 0 && zoom < 18) {
+                zoom++;
+                renderMap();
+            } else if (e.deltaY > 0 && zoom > 2) {
+                zoom--;
+                renderMap();
+            }
+        };
+        
+        // ===== INITIALISATION =====
+        renderMap();
+        
+        console.log('✅ Carte de chasse au trésor mondiale chargée !');
+        console.log(`📍 ${tresors.length} trésors cachés à découvrir au zoom ${ZOOM_MIN_POUR_TRESORS}`);
+    </script>
+</body>
+</html>
