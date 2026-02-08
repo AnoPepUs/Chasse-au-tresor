@@ -33,11 +33,12 @@
     { attribution: 'Tiles © Esri' }
   ).addTo(map);
 
-  // Labels OpenStreetMap
-  const labels = L.tileLayer(
-    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-    { opacity: 0.5 }
-  ).addTo(map);
+ // Labels uniquement (pas la carte complète)
+const labels = L.tileLayer(
+  'https://cartodb-basemaps-a.global.ssl.fastly.net/light_only_labels/{z}/{x}/{y}.png',
+  { opacity: 0.9 }
+).addTo(map);
+
 
   // Barre de recherche
   L.Control.geocoder().addTo(map);
