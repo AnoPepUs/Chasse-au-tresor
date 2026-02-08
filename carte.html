@@ -1,28 +1,54 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Carte Crypto</title>
+
+  <!-- Leaflet (OBLIGATOIRE AVANT TON SCRIPT) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Geocoder -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+  <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+  <style>
+    body { margin: 0; padding: 0; }
+    #map { width: 100vw; height: 100vh; }
+    .popup-img { width: 200px; border-radius: 8px; }
+  </style>
+</head>
+
+<body>
+
+<div id="map"></div>
+
+<!-- TON SCRIPT DOIT ÊTRE APRÈS LEAFLET -->
 <script>
-const apiKey = "oqClb1tzK5aOivVVpyvd";
+const apiKey = "oqCIb1tzK5aOivVVpyvd";
 
 // Carte
 const map = L.map('map', {
-  minZoom: 2,
-  maxZoom: 20
+    minZoom: 2,
+    maxZoom: 20
 }).setView([20, 0], 2);
 
 // Satellite
 L.tileLayer(
-  `https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=${apiKey}`,
-  {
-    maxZoom: 20,
-    attribution: '© MapTiler © OpenStreetMap'
-  }
+    `https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=${apiKey}`,
+    {
+        maxZoom: 20,
+        attribution: '© MapTiler © OpenStreetMap'
+    }
 ).addTo(map);
 
 // Labels
 L.tileLayer(
-  `https://api.maptiler.com/maps/hybrid/256/{z}/{x}/{y}.png?key=${apiKey}`,
-  {
-    maxZoom: 20,
-    opacity: 1
-  }
+    `https://api.maptiler.com/maps/hybrid/256/{z}/{x}/{y}.png?key=${apiKey}`,
+    {
+        maxZoom: 20,
+        opacity: 1
+    }
 ).addTo(map);
 
 // Barre de recherche
@@ -52,7 +78,6 @@ fetch("https://anopepus.github.io/Chasse-au-tresor/data/cryptos.geojson")
           <a href="${p.video}" target="_blank">Voir la vidéo</a>
         `;
 
-        // Popup seulement si on est assez zoomé
         layer.on("click", () => {
           if (map.getZoom() >= 12) {
             layer.bindPopup(popup).openPopup();
@@ -66,3 +91,6 @@ fetch("https://anopepus.github.io/Chasse-au-tresor/data/cryptos.geojson")
 
   });
 </script>
+
+</body>
+</html>
