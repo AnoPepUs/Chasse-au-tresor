@@ -2,21 +2,15 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Carte Crypto</title>
+  <title>Carte Crypto (Leaflet)</title>
 
-  <!-- Mapbox -->
-  <script src="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js"></script>
-  <link href="https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css" rel="stylesheet" />
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-    }
-    #map {
-      width: 100vw;
-      height: 100vh;
-    }
+    body { margin: 0; padding: 0; }
+    #map { width: 100vw; height: 100vh; }
   </style>
 </head>
 
@@ -25,48 +19,30 @@
 <div id="map"></div>
 
 <script>
-  // Mets ton token Mapbox ici
-  mapboxgl.accessToken = "TON_TOKEN_MAPBOX";
+  // Création de la carte
+  const map = L.map('map').setView([20, 0], 2);
 
-  const map = new mapboxgl.Map({
-    container: "map",
-    style: "mapbox://styles/mapbox/streets-v11",
-    center: [0, 20],
-    zoom: 2
-  });
+  // Fond de carte OpenStreetMap (gratuit)
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap'
+  }).addTo(map);
 
-  map.on("load", () => {
-
-    // Chargement de ton GeoJSON hébergé sur GitHub Pages
-    map.addSource("cryptos", {
-      type: "geojson",
-      data: "https://anopepus.github.io/Chasse-au-tresor/data/cryptos.geojson"
+  // Charger ton GeoJSON depuis GitHub Pages
+  fetch("https://anopepus.github.io/Chasse-au-tresor/data/cryptos.geojson")
+    .then(response => response.json())
+    .then(data => {
+      L.geoJSON(data, {
+        style: {
+          color: "#00ffaa",
+          weight: 2,
+          fillColor: "#00ffcc",
+          fillOpacity: 0.25
+        }
+      }).addTo(map);
     });
-
-    // Remplissage des zones
-    map.addLayer({
-      id: "cryptos-fill",
-      type: "fill",
-      source: "cryptos",
-      paint: {
-        "fill-color": "#00ffcc",
-        "fill-opacity": 0.25
-      }
-    });
-
-    // Contours des zones
-    map.addLayer({
-      id: "cryptos-outline",
-      type: "line",
-      source: "cryptos",
-      paint: {
-        "line-color": "#00ffaa",
-        "line-width": 2
-      }
-    });
-
-  });
 </script>
 
 </body>
 </html>
+
