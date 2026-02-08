@@ -27,26 +27,55 @@
   // Création de la carte
   const map = L.map('map').setView([20, 0], 2);
 
-  // Fond satellite Jawg (stable, gratuit, sans token)
-  const satellite = L.tileLayer(
-    'https://tile.jawg.io/jawg-satellite/{z}/{x}/{y}.jpg?access-token=demopublic',
+  // Fond terrain réaliste Stamen (jamais bloqué)
+  const terrain = L.tileLayer(
+    'https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg',
     {
-      attribution: 'Imagery © Jawg Maps',
-      maxZoom: 20
+      attribution: 'Map tiles by Stamen Design — CC BY 3.0',
+      maxZoom: 18
     }
   ).addTo(map);
 
-  // Labels Jawg (compatibles, pas de décalage)
+  // Labels OSM (compatibles)
   const labels = L.tileLayer(
-    'https://tile.jawg.io/jawg-terrain/{z}/{x}/{y}.png?access-token=demopublic',
-    {
-      attribution: 'Labels © Jawg Maps',
-      opacity: 0.5
-    }
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    { opacity: 0.35 }
   ).addTo(map);
 
   // Barre de recherche
   L.Control.geocoder().addTo(map);
 
   // Charger ton GeoJSON
-  fetch
+  fetch("https://anopepus.github.io/Chasse-au-tresor/data/cryptos.geojson")
+    .then(r => r.json())
+    .then(data => {
+
+      L.geoJSON(data, {
+        style: {
+          color: "#00ffaa",
+          weight: 2,
+          fillColor: "#00ffcc",
+          fillOpacity: 0.25
+        },
+
+        onEachFeature: (feature, layer) => {
+          const p = feature.properties;
+
+          const popup = `
+            <h3>${p.name}</h3>
+            <img class="popup-img" src="${p.image}" />
+            <br><br>
+            <a href="${p.video}" target="_blank">Voir la vidéo</a>
+          `;
+
+          layer.bindPopup(popup);
+        }
+
+      }).addTo(map);
+
+    });
+</script>
+
+</body>
+</html>
+
