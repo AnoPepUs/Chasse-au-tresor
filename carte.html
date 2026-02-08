@@ -27,18 +27,17 @@
   // Création de la carte
   const map = L.map('map').setView([20, 0], 2);
 
-  // Fond satellite
-  const satellite = L.tileLayer(
-    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{x}/{y}',
-    { attribution: 'Tiles © Esri' }
-  ).addTo(map);
+// Fond satellite
+const satellite = L.tileLayer(
+  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{x}/{y}',
+  { attribution: 'Tiles © Esri' }
+).addTo(map);
 
- // Labels uniquement (pas la carte complète)
+// Labels uniquement
 const labels = L.tileLayer(
   'https://cartodb-basemaps-a.global.ssl.fastly.net/light_only_labels/{z}/{x}/{y}.png',
   { opacity: 0.9 }
 ).addTo(map);
-
 
   // Barre de recherche
   L.Control.geocoder().addTo(map);
