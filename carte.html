@@ -1,126 +1,80 @@
-<!-- Leaflet JS & Geocoder (inchangés) -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://unpkg.com/leaflet-control-geocoder@2.4.0/dist/Control.Geocoder.js"></script>
+!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Carte Crypto</title>
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Geocoder (barre de recherche) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+  <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+  <style>
+    body { margin: 0; padding: 0; }
+    #map { width: 100vw; height: 100vh; }
+    .popup-img { width: 200px; border-radius: 8px; }
+  </style>
+</head>
+
+<body>
+
+<div id="map"></div>
 
 <script>
-/* ===== CONFIGURATION ===== */
-const ZOOM_MIN_POUR_TRESORS = 15;
+  // Création de la carte
+  const map = L.map('map').setView([20, 0], 2);
 
-const tresors = [
-  { lat: 27.988056, lng: 86.925278, icon: '👑', titre: 'Le Toit du Monde', description: '🏔️ Mont Everest - 8,849m<br><i>"Bitcoin c\'est le roi, tu le trouveras sur le toit"</i>', video: 'https://www.youtube.com/watch?v=VOTRE_VIDEO_EVEREST' },
-  { lat: 25.112222, lng: 55.138889, icon: '🌴', titre: 'Les Palmiers Artificiels', description: '🏝️ Palm Jumeirah - Dubaï<br><i>Un archipel en forme de palmier visible de l\'espace</i>', video: 'https://www.youtube.com/watch?v=VOTRE_VIDEO_DUBAI' },
-  { lat: -14.739444, lng: -75.133333, icon: '🐵', titre: 'Le Singe de Nazca', description: '🗿 Lignes de Nazca - Pérou<br><i>Géoglyphe mystérieux de 2000 ans</i>', video: 'https://www.youtube.com/watch?v=VOTRE_VIDEO_NAZCA' },
-  { lat: 32.133333, lng: -110.95, icon: '✈️', titre: 'L\'Avion du Désert', description: '🏜️ Cimetière d\'avions - Arizona<br><i>Des milliers d\'avions abandonnés dans le désert</i>', video: 'https://www.youtube.com/watch?v=VOTRE_VIDEO_AVION' }
-];
-
-/* ===== CARTE ===== */
-const map = L.map('map', { center: [20, 0], zoom: 3, zoomControl: true, attributionControl: true });
-map.getContainer().setAttribute('role', 'region');
-map.getContainer().setAttribute('aria-label', 'Carte des trésors');
-
-/* ===== COUCHES ===== */
-const esriSatellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-  attribution: '© Esri, DigitalGlobe, GeoEye',
-  maxZoom: 19
-});
-
-const osmLabels = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '© OpenStreetMap contributors',
-  maxZoom: 19,
-  opacity: 0.6
-});
-
-const osmFull = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '© OpenStreetMap contributors',
-  maxZoom: 19
-});
-
-const satelliteAvecLabels = L.layerGroup([esriSatellite, osmLabels]);
-
-/* couche par défaut */
-satelliteAvecLabels.addTo(map);
-
-/* contrôle des couches */
-const baseMaps = {
-  "🛰️ Satellite + Labels": satelliteAvecLabels,
-  "🛰️ Satellite seul": esriSatellite,
-  "🗺️ Carte OpenStreetMap": osmFull
-};
-L.control.layers(baseMaps).addTo(map);
-
-/* ===== TOGGLE LABELS (contrôle dédié) ===== */
-const toggleLabels = document.getElementById('toggle-labels');
-if (toggleLabels) {
-  toggleLabels.addEventListener('change', function() {
-    if (this.checked) {
-      if (!map.hasLayer(osmLabels)) map.addLayer(osmLabels);
-      if (!map.hasLayer(esriSatellite)) map.addLayer(esriSatellite);
-    } else {
-      if (map.hasLayer(osmLabels)) map.removeLayer(osmLabels);
-      if (!map.hasLayer(esriSatellite)) map.addLayer(esriSatellite);
+  // Fond terrain réaliste Stamen (jamais bloqué)
+  const terrain = L.tileLayer(
+    'https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.jpg',
+    {
+      attribution: 'Map tiles by Stamen Design — CC BY 3.0',
+      maxZoom: 18
     }
-  });
-}
+  ).addTo(map);
 
-/* ===== GEOCODER ===== */
-L.Control.geocoder({ defaultMarkGeocode: false, placeholder: 'Rechercher un lieu...', errorMessage: 'Aucun résultat' })
-  .on('markgeocode', function(e) {
-    if (e.geocode && e.geocode.bbox) {
-      map.fitBounds(e.geocode.bbox);
-    }
-  })
-  .addTo(map);
+  // Labels OSM (compatibles)
+  const labels = L.tileLayer(
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    { opacity: 0.35 }
+  ).addTo(map);
 
-/* ===== MARQUEURS ===== */
-let markers = [];
+  // Barre de recherche
+  L.Control.geocoder().addTo(map);
 
-function createTreasureIcon(emoji) {
-  return L.divIcon({
-    html: `<div class="treasure-marker" style="font-size: 40px; text-align: center;">${emoji}</div>`,
-    className: '',
-    iconSize: [50, 50],
-    iconAnchor: [25, 50],
-    popupAnchor: [0, -50]
-  });
-}
+  // Charger ton GeoJSON
+  fetch("https://anopepus.github.io/Chasse-au-tresor/data/cryptos.geojson")
+    .then(r => r.json())
+    .then(data => {
 
-function createPopupContent(tresor) {
-  // Si les descriptions sont dynamiques, appliquer une sanitation côté serveur ou ici.
-  return `
-    <div class="popup-title">${tresor.icon} ${tresor.titre}</div>
-    <div class="popup-description">${tresor.description}</div>
-    <a href="${tresor.video}" target="_blank" rel="noopener noreferrer" class="popup-link">🎬 Voir la vidéo</a>
-  `;
-}
+      L.geoJSON(data, {
+        style: {
+          color: "#00ffaa",
+          weight: 2,
+          fillColor: "#00ffcc",
+          fillOpacity: 0.25
+        },
 
-tresors.forEach(t => {
-  const m = L.marker([t.lat, t.lng], { icon: createTreasureIcon(t.icon), opacity: 0 });
-  m.bindPopup(createPopupContent(t));
-  markers.push({ marker: m, tresor: t });
-});
+        onEachFeature: (feature, layer) => {
+          const p = feature.properties;
 
-/* ===== AFFICHAGE SELON ZOOM ===== */
-function updateMarkers() {
-  const currentZoom = map.getZoom();
-  const zoomEl = document.getElementById('zoom-current');
-  if (zoomEl) zoomEl.textContent = currentZoom;
+          const popup = `
+            <h3>${p.name}</h3>
+            <img class="popup-img" src="${p.image}" />
+            <br><br>
+            <a href="${p.video}" target="_blank">Voir la vidéo</a>
+          `;
 
-  markers.forEach(({ marker }) => {
-    if (currentZoom >= ZOOM_MIN_POUR_TRESORS) {
-      if (!map.hasLayer(marker)) {
-        marker.addTo(map);
-        // animation CSS préférable, fallback JS:
-        marker.setOpacity(0);
-        setTimeout(() => marker.setOpacity(1), 120);
-      }
-    } else {
-      if (map.hasLayer(marker)) map.removeLayer(marker);
-    }
-  });
-}
+          layer.bindPopup(popup);
+        }
 
-map.on('zoomend', updateMarkers);
-updateMarkers();
+      }).addTo(map);
 
-console.log('✅ Carte initialisée — trésors:', tresors.length);
+    });
 </script>
+
+</body>
+</html>
