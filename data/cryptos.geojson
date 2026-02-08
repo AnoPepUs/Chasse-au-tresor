@@ -10,8 +10,8 @@
       },
       "properties": {
         "name": "BTC",
-        "image": "https://mymaps.usercontent.google.com/hostedimage/m/*/3ALCsBooT7hHUlR83ycz18fMA523ykG5lKj4ulO4xWaWKEkc7fQeq4W44Zj5U77OxzsDztZui6ZtpiD5ryIO0pRtRZPrOZi_WonqlQXcXiIpS1OpEHm-vJ0oxyF1gkzk-LC6q1y4lJnhrgRXxaSGu5PwTjd-KDQpdJJ8Ul2d96HGJj5S2jN1l4T964V7Ft9NjJo5gtJmQXKrIZikTfg?authuser=0&fife=s16383",
-        "video": "https://youtube.com/shorts/5an4uCdBuT8"
+        "image": "URL_IMAGE",
+        "video": "URL_VIDEO"
       }
     },
 
@@ -23,94 +23,10 @@
       },
       "properties": {
         "name": "ETH",
-        "image": "https://mymaps.usercontent.google.com/hostedimage/m/*/3ALCsBoq2mOIEUPXFwZamSuS7fG0JRMc2KfHKP5N-ttqsc3iGQdk7pEWLVHWYE3pi3f4KrGJpu8vgqSdFB4BvGnpxejHf0twf8VwPcLy8Q1vKOrBqa08G3XBpWOj6mzD4I21n9Z_ccr9noxTxl3N3y9ejJJhoEm2Jzx4QWJe_5HU9up9Lnd0FjmevPAGc4IrhF_7qmH9JWRmNnfvMVj1Rs3UmJA4lPOnsdBj7mR3pYkUQonNfRju8au9IYZD9C5Y95g?authuser=0&fife=s16383",
-        "video": "https://www.youtube.com/watch?v=8ZdzZc3qbzs"
-      }
-    },
-
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [[[-116.8553816,37.5644442],[-116.8515193,37.5609403],[-116.8467128,37.56407],[-116.8513476,37.5670635],[-116.8553816,37.5644442]]]
-      },
-      "properties": {
-        "name": "BNB",
-        "image": "https://mymaps.usercontent.google.com/hostedimage/m/*/3ALCsBoovN6tbISBGngAbfrC-JsZ1nz6Ydi9EvqI9i7nyURsALl3TD0mkyTyMryoF6KhJl8HWLMnaS1K3EIfJkX1l5XjPtT4EPaU_fL16fth9CcttnmKcKi7RgPm4gem73cyol_NESsEaA5ohklLQtDCLqULN-NzyZIBNAaVnVMLjRBOeDTSDkgBlPAMBhGukS3IrtuLP8O99_bE2?authuser=0&fife=s16383",
-        "video": "https://youtube.com/shorts/SOvvXAeEXpo"
-      }
-    },
-
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [[[54.9695049,25.0348674],[54.9516521,24.9987783],[54.9870143,24.9723269],[55.0155101,24.9844641],[55.02066,25.0246018],[54.9695049,25.0348674]]]
-      },
-      "properties": {
-        "name": "1INCH",
-        "image": "https://mymaps.usercontent.google.com/hostedimage/m/*/3ALCsBopBqYkOeAooeO9F_OggT1tCgLMejLRYVG2p2LDSKARKhgLqb4B6YDPgnrPBFjxMNvf8ofXriTmQwdz1WlDfvjkKlhuO1W5RYDuwezrk0rAIbcpMF5NgW5Y6cEzWD3uUm0GJZWFI3VtBmBKHooOFRjGHjRkS8ZxpRJGrPUg_wBuq7TVsL3134C7ilDLMMFpyEVH5eHKusXVavA?authuser=0&fife=s16383",
-        "video": "https://youtube.com/shorts/j3BVqtlNv4U"
-      }
-    },
-
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [[[-13.2376217,22.6316223],[-13.2394885,22.6307162],[-13.2395314,22.6285227],[-13.2329386,22.6283741],[-13.2343467,22.631246],[-13.2376217,22.6316223]]]
-      },
-      "properties": {
-        "name": "MANA",
-        "image": "https://mymaps.usercontent.google.com/hostedimage/m/*/3ALCsBooXqQ0X-fGbg9eFX38Ii6H3sZVT3ynaEfOpkTR0-d_E04xwIqOryY3MA5IwW2iGsHJPRaD0Z9mLawrVd8NVqcQh7lJzFVW5MVUd8q4q91EqP0SxMRCveboGOQHQzSUfQw8sU-xl4HsSQown8Md0cSSouW7SPNan6UxpiCcwudzKkde3gW1a8Wuu02tEbGlJoITq16sz7vBXY1EIT9nBVucqDA3mTZqv_JIueE63ITqsNEeQsaWwubf3kScOKg?authuser=0&fife=s16383",
-        "video": "https://youtube.com/shorts/XHN6xTmMkM8"
-      }
-    },
-
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [[[-69.6341327,-19.9491226],[-69.6340227,-19.9494025],[-69.6331805,-19.949047],[-69.6334058,-19.948689],[-69.6341729,-19.9489865],[-69.6341327,-19.9491226]]]
-      },
-      "properties": {
-        "name": "LINK",
-        "image": "https://mymaps.usercontent.google.com/hostedimage/m/*/3ALCsBorTe-gQYTBALEOQLhcVeBD0dBy54IoOtvRkBkGeabABIgG9x6aJN5ISfmekLecWcowt1dSiDaGHU69szT62uPIkRifpCqEPyuT2LXaHDjmlGnXr6_tCqXOhFRf1r3JYB7XZPT3ehsUTnafRFYyIXcW25UtJ5_0BuMbNGPElQ8b59dcvAzFE2e9bWiyTC31k2ol4BDVbcyUM6w?authuser=0&fife=s16383",
-        "video": "https://youtube.com/shorts/BQCfij1RapY"
-      }
-    }
-
-    /*  
-    ==========================================================
-    POUR AJOUTER UNE NOUVELLE CRYPTO :
-    Copier-coller ce bloc ↓↓↓
-    ==========================================================
-
-    {
-      "type": "Feature",
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [
-          [
-            [LONG, LAT],
-            [LONG, LAT],
-            [LONG, LAT],
-            [LONG, LAT],
-            [LONG, LAT]
-          ]
-        ]
-      },
-      "properties": {
-        "name": "NOUVELLE_CRYPTO",
         "image": "URL_IMAGE",
         "video": "URL_VIDEO"
       }
     }
-
-    ==========================================================
-    FIN DU BLOC À COPIER
-    ==========================================================
-    */
 
   ]
 }
