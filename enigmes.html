@@ -192,49 +192,51 @@
         <!-- ============================
              BLOC BTC
         ============================= -->
-        <h2>Chasse au trésor Bitcoin</h2>
+            <h2>Chasse au trésor Bitcoin</h2>
 
-        <div class="crypto-container">
+    <div class="crypto-container">
 
-            <div class="crypto-header">
-                <div class="crypto-image">
-                    <img src="https://i.postimg.cc/ftr22y7D/Bitcoin.png" alt="Bitcoin">
-                </div>
-
-                <div class="crypto-links">
-                    <a href="https://bitcoin.org" target="_blank">Site officiel</a><br>
-                    <a href="https://pepinoutoken.blogspot.com/p/sur-page.html" target="_blank">Où et comment acheter ?</a>
-                </div>
+        <div class="crypto-header">
+            <div class="crypto-image">
+                <img src="https://i.postimg.cc/ftr22y7D/Bitcoin.png" alt="Bitcoin">
             </div>
 
-            <button class="open-popup" data-popup="btc">Voir l’énigme</button>
-
-            <div class="popup" id="popup-btc">
-                <p>Bitcoin est le roi, tu le trouveras sur le toit.</p>
-                <button class="close-popup">Fermer</button>
+            <div class="crypto-links">
+                <a href="https://bitcoin.org" target="_blank">Site officiel</a><br>
+                <a href="https://pepinoutoken.blogspot.com/p/sur-page.html" target="_blank">Où et comment acheter ?</a>
             </div>
-
         </div>
 
-        <!-- Tu pourras ajouter ETH, SOL, BNB ici -->
+        <button class="open-popup" data-popup="btc">Voir l’énigme</button>
+
+        <div class="popup" id="popup-btc">
+            <p>Bitcoin est le roi, tu le trouveras sur le toit.</p>
+            <button class="close-popup">Fermer</button>
+        </div>
 
     </div>
 
-    <!-- SCRIPT POPUP GÉNÉRIQUE -->
-    <script>
-    document.querySelectorAll(".open-popup").forEach(btn => {
-        btn.addEventListener("click", () => {
-            const id = btn.dataset.popup;
-            document.getElementById("popup-" + id).style.display = "block";
-        });
-    });
+</div>
 
-    document.querySelectorAll(".close-popup").forEach(btn => {
-        btn.addEventListener("click", () => {
-            btn.parentElement.style.display = "none";
-        });
+
+<!-- SCRIPT POPUP GÉNÉRIQUE -->
+<script>
+document.querySelectorAll(".open-popup").forEach(btn => {
+    btn.addEventListener("click", () => {
+        const id = btn.dataset.popup;
+        document.getElementById("popup-" + id).style.display = "block";
     });
-    </script>
+});
+
+document.querySelectorAll(".close-popup").forEach(btn => {
+    btn.addEventListener("click", () => {
+        btn.parentElement.style.display = "none";
+    });
+});
+</script>
 
 </body>
 </html>
+
+
+        
