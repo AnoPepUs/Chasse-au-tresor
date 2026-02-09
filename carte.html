@@ -2,9 +2,9 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Carte Crypto</title>
+  <title>Chasse au Trésor Crypto</title>
 
-  <!-- Leaflet (OBLIGATOIRE AVANT TON SCRIPT) -->
+  <!-- Leaflet -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
@@ -12,47 +12,70 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
   <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
+  <!-- Règle de distance -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-measure/dist/leaflet-measure.css" />
+  <script src="https://unpkg.com/leaflet-measure/dist/leaflet-measure.js"></script>
+
   <style>
     body { margin: 0; padding: 0; }
     #map { width: 100vw; height: 100vh; }
-    .popup-img { width: 200px; border-radius: 8px; }
+    #coords {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      background: white;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 14px;
+      z-index: 9999;
+    }
+    .popup-img {
+      width: 200px;
+      border-radius: 8px;
+    }
   </style>
 </head>
 
 <body>
 
 <div id="map"></div>
+<div id="coords">Lat: -- | Lng: --</div>
 
-<!-- TON SCRIPT DOIT ÊTRE APRÈS LEAFLET -->
 <script>
-const apiKey = "oqClb1tzK5aOivVVpyvd";
+const apiKey = "oqCIb1tzK5aOivVVpyvd";
 
 // Carte
 const map = L.map('map', {
-    minZoom: 2,
-    maxZoom: 20
+  minZoom: 2,
+  maxZoom: 20
 }).setView([20, 0], 2);
 
 // Satellite
 L.tileLayer(
-    `https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=${apiKey}`,
-    {
-        maxZoom: 20,
-        attribution: '© MapTiler © OpenStreetMap'
-    }
+  `https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=${apiKey}`,
+  { maxZoom: 20, attribution: '© MapTiler © OpenStreetMap' }
 ).addTo(map);
 
 // Labels
 L.tileLayer(
-    `https://api.maptiler.com/maps/hybrid/256/{z}/{x}/{y}.png?key=${apiKey}`,
-    {
-        maxZoom: 20,
-        opacity: 1
-    }
+  `https://api.maptiler.com/maps/hybrid/256/{z}/{x}/{y}.png?key=${apiKey}`,
+  { maxZoom: 20, opacity: 1 }
 ).addTo(map);
 
 // Barre de recherche
 L.Control.geocoder().addTo(map);
+
+// Règle de distance
+L.control.measure({
+  primaryLengthUnit: 'meters',
+  secondaryLengthUnit: 'kilometers'
+}).addTo(map);
+
+// Affichage des coordonnées GPS
+map.on("mousemove", (e) => {
+  document.getElementById("coords").innerHTML =
+    `Lat: ${e.latlng.lat.toFixed(6)} | Lng: ${e.latlng.lng.toFixed(6)}`;
+});
 
 // Charger GeoJSON
 fetch("https://anopepus.github.io/Chasse-au-tresor/data/cryptos.geojson")
@@ -61,33 +84,59 @@ fetch("https://anopepus.github.io/Chasse-au-tresor/data/cryptos.geojson")
 
     L.geoJSON(data, {
 
+      // Polygones invisibles
       style: {
-        color: "#00ffaa",
-        weight: 2,
-        fillColor: "#00ffcc",
-        fillOpacity: 0.15
+        color: "transparent",
+        fillColor: "transparent",
+        fillOpacity: 0
       },
 
       onEachFeature: (feature, layer) => {
         const p = feature.properties;
 
-        const popup = `
-          <h3>${p.name}</h3>
-          <img class="popup-img" src="${p.image}" />
-          <br><br>
-          <a href="${p.video}" target="_blank">Voir la vidéo</a>
-        `;
+        // Icône diamant
+        const icon = L.icon({
+          iconUrl: p.icon,
+          iconSize: [48, 48],
+          iconAnchor: [24, 24],
+          popupAnchor: [0, -24]
+        });
 
-        layer.on("click", () => {
-          if (map.getZoom() >= 12) {
-            layer.bindPopup(popup).openPopup();
+        // Centre du polygone
+        const center = layer.getBounds().getCenter();
+
+        // Marker (non ajouté immédiatement)
+        const marker = L.marker(center, { icon });
+
+        // Afficher l’icône seulement si zoom >= 10
+        map.on("zoomend", () => {
+          if (map.getZoom() >= 10) {
+            if (!map.hasLayer(marker)) map.addLayer(marker);
           } else {
-            alert("Zoom encore un peu pour découvrir le trésor !");
+            if (map.hasLayer(marker)) map.removeLayer(marker);
+          }
+        });
+
+        // Clic sur l’icône
+        marker.on("click", () => {
+
+          // Distance entre joueur et trésor
+          const distance = map.distance(map.getCenter(), center);
+
+          if (distance <= 500) {
+            marker.bindPopup(`
+              <h3>${p.name}</h3>
+              <img class="popup-img" src="${p.image}" />
+              <br><br>
+              <a href="${p.video}" target="_blank">Voir la vidéo</a>
+            `).openPopup();
+          } else {
+            alert("Tu es trop loin du trésor, rapproche-toi !");
           }
         });
       }
 
-    }).addTo(map);
+    });
 
   });
 </script>
