@@ -29,6 +29,24 @@
       width: 200px;
       border-radius: 8px;
     }
+    .measure-btn {
+      background: white;
+      border: 2px solid #666;
+      border-radius: 4px;
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: bold;
+    }
+    .measure-btn.active {
+      background: #007bff;
+      color: white;
+      border-color: #0056b3;
+    }
   </style>
 </head>
 
@@ -67,16 +85,45 @@ map.on("mousemove", (e) => {
     `Lat: ${e.latlng.lat.toFixed(6)} | Lng: ${e.latlng.lng.toFixed(6)}`;
 });
 
-// --- RÈGLE DE DISTANCE MAISON (POINT A → POINT B) ---
+
+// --- BOUTON RÈGLE ---
+let measureActive = false;
 let startPoint = null;
 let tempLine = null;
 let tempMarkerA = null;
 let tempMarkerB = null;
 
+const MeasureControl = L.Control.extend({
+  onAdd: function() {
+    const btn = L.DomUtil.create("div", "measure-btn");
+    btn.innerHTML = "📏";
+
+    btn.onclick = () => {
+      measureActive = !measureActive;
+      btn.classList.toggle("active");
+
+      // Reset si on désactive
+      if (!measureActive) {
+        startPoint = null;
+        if (tempLine) map.removeLayer(tempLine);
+        if (tempMarkerA) map.removeLayer(tempMarkerA);
+        if (tempMarkerB) map.removeLayer(tempMarkerB);
+      }
+    };
+
+    // Empêche le clic de bouger la carte
+    L.DomEvent.disableClickPropagation(btn);
+
+    return btn;
+  }
+});
+
+new MeasureControl({ position: "topleft" }).addTo(map);
+
+
+// --- LOGIQUE DE MESURE ---
 map.on("click", (e) => {
-  // si on clique sur un marker, Leaflet déclenche aussi map.click,
-  // donc on ignore si le clic vient d’un marker (option simple)
-  if (e.originalEvent.target.tagName === 'IMG') return;
+  if (!measureActive) return; // règle inactive → rien ne se passe
 
   if (!startPoint) {
     // Premier clic : point A
@@ -112,6 +159,7 @@ map.on("click", (e) => {
   }
 });
 
+
 // Charger GeoJSON
 fetch("https://anopepus.github.io/Chasse-au-tresor/data/cryptos.geojson")
   .then(r => r.json())
@@ -137,13 +185,10 @@ fetch("https://anopepus.github.io/Chasse-au-tresor/data/cryptos.geojson")
           popupAnchor: [0, -24]
         });
 
-        // Centre du polygone
         const center = layer.getBounds().getCenter();
-
-        // Marker (non ajouté immédiatement)
         const marker = L.marker(center, { icon });
 
-        // Afficher l’icône seulement si zoom >= 10
+        // Icône visible seulement si zoom >= 10
         map.on("zoomend", () => {
           if (map.getZoom() >= 10) {
             if (!map.hasLayer(marker)) map.addLayer(marker);
@@ -152,7 +197,7 @@ fetch("https://anopepus.github.io/Chasse-au-tresor/data/cryptos.geojson")
           }
         });
 
-        // Clic sur l’icône
+        // Clic sur le diamant
         marker.on("click", () => {
           const distance = map.distance(map.getCenter(), center);
 
