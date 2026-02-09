@@ -12,10 +12,6 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
   <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
-  <!-- Règle de distance -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet-measure/dist/leaflet-measure.css" />
-  <script src="https://unpkg.com/leaflet-measure/dist/leaflet-measure.js"></script>
-
   <style>
     body { margin: 0; padding: 0; }
     #map { width: 100vw; height: 100vh; }
@@ -65,19 +61,55 @@ L.tileLayer(
 // Barre de recherche
 L.Control.geocoder().addTo(map);
 
-// Règle de distance
-L.control.measure({
-  position: 'topleft',
-  primaryLengthUnit: 'meters',
-  secondaryLengthUnit: 'kilometers',
-  activeColor: '#00aaff',
-  completedColor: '#0066ff'
-}).addTo(map);
-
 // Affichage des coordonnées GPS
 map.on("mousemove", (e) => {
   document.getElementById("coords").innerHTML =
     `Lat: ${e.latlng.lat.toFixed(6)} | Lng: ${e.latlng.lng.toFixed(6)}`;
+});
+
+// --- RÈGLE DE DISTANCE MAISON (POINT A → POINT B) ---
+let startPoint = null;
+let tempLine = null;
+let tempMarkerA = null;
+let tempMarkerB = null;
+
+map.on("click", (e) => {
+  // si on clique sur un marker, Leaflet déclenche aussi map.click,
+  // donc on ignore si le clic vient d’un marker (option simple)
+  if (e.originalEvent.target.tagName === 'IMG') return;
+
+  if (!startPoint) {
+    // Premier clic : point A
+    startPoint = e.latlng;
+
+    if (tempMarkerA) map.removeLayer(tempMarkerA);
+    if (tempMarkerB) map.removeLayer(tempMarkerB);
+    if (tempLine) map.removeLayer(tempLine);
+
+    tempMarkerA = L.marker(startPoint, { opacity: 0.7 }).addTo(map);
+
+  } else {
+    // Deuxième clic : point B
+    const endPoint = e.latlng;
+
+    if (tempMarkerB) map.removeLayer(tempMarkerB);
+    tempMarkerB = L.marker(endPoint, { opacity: 0.7 }).addTo(map);
+
+    if (tempLine) map.removeLayer(tempLine);
+    tempLine = L.polyline([startPoint, endPoint], {
+      color: "#00aaff",
+      weight: 3
+    }).addTo(map);
+
+    const d = map.distance(startPoint, endPoint);
+    const txt = d > 1000
+      ? (d / 1000).toFixed(2) + " km"
+      : Math.round(d) + " m";
+
+    tempLine.bindPopup("Distance : " + txt).openPopup();
+
+    startPoint = null;
+  }
 });
 
 // Charger GeoJSON
@@ -122,8 +154,6 @@ fetch("https://anopepus.github.io/Chasse-au-tresor/data/cryptos.geojson")
 
         // Clic sur l’icône
         marker.on("click", () => {
-
-          // Distance entre joueur et trésor
           const distance = map.distance(map.getCenter(), center);
 
           if (distance <= 500) {
