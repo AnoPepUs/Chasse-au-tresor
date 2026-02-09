@@ -1,29 +1,104 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-    <title>Mon Site</title>
+    <meta charset="UTF-8">
+    <title>Chasse au Trésor Crypto</title>
+
     <style>
         body {
             margin: 0;
             padding: 0;
-            background-image: url('https://i.postimg.cc/8587sKxz/outerspace-70.gif');
+            background-image: url('https://i.postimg.cc/8587sKxz/outerspace-70.gif'); /* Ton fond actuel */
             background-size: cover;
             background-repeat: no-repeat;
             background-attachment: fixed;
             height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             color: white;
             font-family: Arial, sans-serif;
+            text-align: center;
         }
-        h1 {
-            text-shadow: 2px 2px 4px gba(0, 0, 0, 0.8);
+
+        /* Barre de navigation */
+        nav {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 12px;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            backdrop-filter: blur(4px);
+            position: fixed;
+            top: 0;
+            width: 100%;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            color: #00aaff;
+        }
+
+        /* Contenu */
+        .container {
+            margin-top: 120px;
+            background: rgba(0, 0, 0, 0.55);
+            padding: 30px;
+            border-radius: 12px;
+            width: 70%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn-map img {
+            width: 200px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .btn-map img:hover {
+            transform: scale(1.1);
+        }
+
+        .intro {
+            max-width: 700px;
+            margin: 20px auto;
+            font-size: 20px;
+            line-height: 1.6;
         }
     </style>
 </head>
+
 <body>
-    <h1>Bienvenue sur mon site !</h1>
+
+    <!-- Barre de navigation -->
+    <nav>
+        <a href="index.html">Accueil</a>
+        <a href="carte.html">Carte</a>
+        <a href="enigmes.html">Énigmes</a>
+    </nav>
+
+    <div class="container">
+
+        <h1>Bienvenue dans la Chasse au Trésor Crypto</h1>
+
+        <p class="intro">
+            Explore la planète, découvre des trésors cachés, résous des énigmes et débloque
+            des secrets. Chaque diamant représente un token caché quelque part dans le monde.
+            À toi de les trouver.
+        </p>
+
+        <!-- Bouton Terre tournante -->
+        <a class="btn-map" href="carte.html">
+            <img src="https://i.postimg.cc/YLzvn1Ds/terre-tourne.gif" alt="Accéder à la carte">
+        </a>
+
+        <p>Clique sur la Terre pour accéder à la carte interactive.</p>
+
+    </div>
+
 </body>
 </html>
-
