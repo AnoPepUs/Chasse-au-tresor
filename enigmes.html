@@ -12,12 +12,13 @@
             background-size: cover;
             background-repeat: no-repeat;
             background-attachment: fixed;
-            min-height: 100vh; /* <-- remplace height:100vh */
+            min-height: 100vh;
             color: white;
             font-family: Arial, sans-serif;
             text-align: center;
         }
 
+        /* Barre de navigation */
         nav {
             background: rgba(0, 0, 0, 0.6);
             padding: 12px;
@@ -28,6 +29,7 @@
             position: fixed;
             top: 0;
             width: 100%;
+            z-index: 10;
         }
 
         nav a {
@@ -41,14 +43,35 @@
             color: #00aaff;
         }
 
+        /* Contenu principal */
         .container {
             margin-top: 120px;
             background: rgba(0, 0, 0, 0.55);
             padding: 30px;
             border-radius: 12px;
-            width: 70%;
+            width: 80%;
+            max-width: 900px;
             margin-left: auto;
             margin-right: auto;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 6px black;
+        }
+
+        .enigme-block {
+            text-align: left;
+            margin-top: 20px;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        .token {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid #00aaff;
         }
     </style>
 </head>
@@ -62,6 +85,16 @@
     </nav>
 
     <div class="container">
+        <h1>Liste des Tokens Trouvés</h1>
+
+        <div class="enigme-block">
+            <div class="token">• BTC – Mont Everest</div>
+            <div class="token">• ETH – Fosse des Mariannes</div>
+            <!-- Tu peux ajouter autant de tokens que tu veux -->
+        </div>
+
+        <br><br>
+
         <h1>Énigmes</h1>
         <p>Les énigmes arriveront bientôt…</p>
     </div>
