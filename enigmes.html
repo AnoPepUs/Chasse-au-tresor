@@ -17,27 +17,7 @@
             font-family: Arial, sans-serif;
             text-align: center;
         }
-<div id="side-panel">
-    <h3>Indicateurs Crypto</h3>
 
-    <!-- Fear & Greed -->
-    <iframe src="https://cryptorank.io/widget/fear-and-greed-index-chart?theme=dark" 
-            width="100%" height="200" frameborder="0"></iframe>
-
-    <!-- Rainbow Chart -->
-    <iframe src="https://coinmarketcap.com/charts/crypto-market-cycle-indicators/" 
-            width="100%" height="200" frameborder="0"></iframe>
-
-    <!-- ETH Gas Fees -->
-    <iframe src="https://etherscan.io/gastracker" 
-            width="100%" height="200" frameborder="0"></iframe>
-
-    <!-- CoinGecko -->
-    <a href="https://www.coingecko.com/fr" target="_blank" class="coingecko-link">
-        <img src="https://static.coingecko.com/s/coingecko-logo.png" width="120">
-        <div>Voir le prix de ton token</div>
-    </a>
-</div>
         /* Barre de navigation */
         nav {
             background: rgba(0, 0, 0, 0.6);
@@ -141,58 +121,74 @@
             background: #444;
             margin-top: 10px;
         }
-/* Panneau latéral fixe */
-#side-panel {
-    position: fixed;
-    top: 100px;
-    right: 20px;
-    width: 260px;
-    background: rgba(0,0,0,0.6);
-    padding: 15px;
-    border-radius: 12px;
-    backdrop-filter: blur(4px);
-    color: white;
-    z-index: 999;
-}
 
-#side-panel h3 {
-    margin-top: 0;
-    text-align: center;
-}
+        /* Panneau latéral fixe */
+        #side-panel {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            width: 260px;
+            background: rgba(0,0,0,0.6);
+            padding: 15px;
+            border-radius: 12px;
+            backdrop-filter: blur(4px);
+            color: white;
+            z-index: 999;
+        }
 
-.coingecko-link {
-    display: block;
-    text-align: center;
-    margin-top: 15px;
-    color: white;
-    text-decoration: none;
-}
+        #side-panel h3 {
+            margin-top: 0;
+            text-align: center;
+        }
 
-.coingecko-link img {
-    width: 100px;
-    margin-bottom: 5px;
-}
+        .coingecko-link {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: white;
+            text-decoration: none;
+        }
 
+        .coingecko-link img {
+            width: 100px;
+            margin-bottom: 5px;
+        }
     </style>
 </head>
 
 <body>
 
-    <!-- Barre de navigation -->
-    <nav>
-        <a href="index.html" target="_blank">Accueil</a>
-        <a href="carte.html" target="_blank">Carte</a>
-        <a href="enigmes.html" target="_blank">Énigmes</a>
-    </nav>
+<!-- PANNEAU LATÉRAL FIXE -->
+<div id="side-panel">
+    <h3>Indicateurs Crypto</h3>
 
-    <div class="container">
+    <iframe src="https://cryptorank.io/widget/fear-and-greed-index-chart?theme=dark" 
+            width="100%" height="200" frameborder="0"></iframe>
 
-        <h1>Énigmes & Tokens</h1>
+    <iframe src="https://coinmarketcap.com/charts/crypto-market-cycle-indicators/" 
+            width="100%" height="200" frameborder="0"></iframe>
 
-        <!-- ============================
-             BLOC BTC
-        ============================= -->
-            <h2>Chasse au trésor Bitcoin</h2>
+    <iframe src="https://etherscan.io/gastracker" 
+            width="100%" height="200" frameborder="0"></iframe>
+
+    <a href="https://www.coingecko.com/fr" target="_blank" class="coingecko-link">
+        <img src="https://static.coingecko.com/s/coingecko-logo.png">
+        <div>Voir le prix de ton token</div>
+    </a>
+</div>
+
+<!-- Barre de navigation -->
+<nav>
+    <a href="index.html" target="_blank">Accueil</a>
+    <a href="carte.html" target="_blank">Carte</a>
+    <a href="enigmes.html" target="_blank">Énigmes</a>
+</nav>
+
+<div class="container">
+
+    <h1>Énigmes & Tokens</h1>
+
+    <h2>Chasse au trésor Bitcoin</h2>
 
     <div class="crypto-container">
 
@@ -218,8 +214,6 @@
 
 </div>
 
-
-<!-- SCRIPT POPUP GÉNÉRIQUE -->
 <script>
 document.querySelectorAll(".open-popup").forEach(btn => {
     btn.addEventListener("click", () => {
@@ -237,6 +231,3 @@ document.querySelectorAll(".close-popup").forEach(btn => {
 
 </body>
 </html>
-
-
-        
