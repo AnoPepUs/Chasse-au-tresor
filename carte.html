@@ -67,8 +67,11 @@ L.Control.geocoder().addTo(map);
 
 // Règle de distance
 L.control.measure({
+  position: 'topleft',
   primaryLengthUnit: 'meters',
-  secondaryLengthUnit: 'kilometers'
+  secondaryLengthUnit: 'kilometers',
+  activeColor: '#00aaff',
+  completedColor: '#0066ff'
 }).addTo(map);
 
 // Affichage des coordonnées GPS
