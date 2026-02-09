@@ -51,8 +51,8 @@
             background: rgba(0, 0, 0, 0.55);
             padding: 30px;
             border-radius: 12px;
-            width: 80%;
-            max-width: 900px;
+            width: 70%; /* rétréci pour laisser la place au panneau */
+            max-width: 750px;
             margin-left: auto;
             margin-right: auto;
         }
@@ -76,10 +76,16 @@
             width: 120px;
         }
 
+        .crypto-links {
+            text-align: right;
+        }
+
         .crypto-links a {
             color: #00aaff;
             text-decoration: none;
             font-weight: bold;
+            display: block;
+            margin-bottom: 8px; /* espace entre les deux liens */
         }
 
         .crypto-links a:hover {
@@ -144,15 +150,23 @@
             text-align: center;
         }
 
-        .coingecko-link {
-            display: block;
-            margin-top: 10px;
-            padding: 10px;
+        /* Bouton CoinGecko image + texte */
+        .coingecko-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
             background: rgba(0,255,127,0.35);
+            padding: 10px;
             border-radius: 8px;
-            font-weight: bold;
+            margin-top: 15px;
             text-decoration: none;
             color: white;
+            font-weight: bold;
+        }
+
+        .coingecko-button img {
+            width: 80px; /* taille idéale */
         }
     </style>
 </head>
@@ -176,8 +190,10 @@
         arrow-color="#ffffff">
     </cs-widget>
 
-    <a href="https://www.coingecko.com/fr" target="_blank" class="coingecko-link">
-        Voir le prix de ton token sur CoinGecko
+    <!-- Bouton CoinGecko image + texte -->
+    <a href="https://www.coingecko.com/fr" target="_blank" class="coingecko-button">
+        <img src="https://static.coingecko.com/s/coingecko-logo.png" alt="CoinGecko">
+        <span>Voir le prix de ton token</span>
     </a>
 </div>
 
@@ -202,7 +218,7 @@
             </div>
 
             <div class="crypto-links">
-                <a href="https://bitcoin.org" target="_blank">Site officiel</a><br>
+                <a href="https://bitcoin.org" target="_blank">Site officiel</a>
                 <a href="https://pepinoutoken.blogspot.com/p/sur-page.html" target="_blank">Où et comment acheter ?</a>
             </div>
         </div>
