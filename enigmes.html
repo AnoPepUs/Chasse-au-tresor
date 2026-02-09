@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Énigmes - Chasse au Trésor Crypto</title>
 
+    <script async src="https://static.coinstats.app/widgets/v3/cs-widget.js"></script>
+
     <style>
         body {
             margin: 0;
@@ -142,17 +144,6 @@
             text-align: center;
         }
 
-        .panel-item {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .panel-item img {
-            width: 100%;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
         .coingecko-link {
             display: block;
             margin-top: 10px;
@@ -172,23 +163,18 @@
 <div id="side-panel">
     <h3>Indicateurs Crypto</h3>
 
-    <div class="panel-item">
-        <a href="https://cryptorank.io/charts/fear-and-greed" target="_blank">
-            <img src="fear.png" alt="Fear & Greed">
-        </a>
-    </div>
-
-    <div class="panel-item">
-        <a href="https://coinmarketcap.com/charts/crypto-market-cycle-indicators/" target="_blank">
-            <img src="rainbow.png" alt="Rainbow Chart">
-        </a>
-    </div>
-
-    <div class="panel-item">
-        <a href="https://etherscan.io/gastracker" target="_blank">
-            <img src="gas.png" alt="ETH Gas Fees">
-        </a>
-    </div>
+    <!-- Widget Fear & Greed -->
+    <cs-widget type="fear-and-greed"
+        theme="dark"
+        direction="vertical"
+        background="#000000"
+        is-market-sentiment-visible="false"
+        is-last-updated-visible="true"
+        title-color="#ffffff"
+        subtitle-color="#cccccc"
+        last-updated-color="#cccccc"
+        arrow-color="#ffffff">
+    </cs-widget>
 
     <a href="https://www.coingecko.com/fr" target="_blank" class="coingecko-link">
         Voir le prix de ton token sur CoinGecko
