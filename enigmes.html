@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Énigmes - Chasse au Trésor Crypto</title>
 
+    <!-- Widget CoinStats -->
     <script async src="https://static.coinstats.app/widgets/v3/cs-widget.js"></script>
 
     <style>
@@ -45,14 +46,14 @@
             color: #00aaff;
         }
 
-        /* Conteneur principal */
+        /* Conteneur principal — rétréci pour laisser la place au panneau */
         .container {
             margin-top: 120px;
             background: rgba(0, 0, 0, 0.55);
             padding: 30px;
             border-radius: 12px;
-            width: 70%; /* rétréci pour laisser la place au panneau */
-            max-width: 750px;
+            width: 65%;
+            max-width: 700px;
             margin-left: auto;
             margin-right: auto;
         }
@@ -85,7 +86,7 @@
             text-decoration: none;
             font-weight: bold;
             display: block;
-            margin-bottom: 8px; /* espace entre les deux liens */
+            margin-bottom: 10px; /* espace entre les deux liens */
         }
 
         .crypto-links a:hover {
@@ -167,6 +168,7 @@
 
         .coingecko-button img {
             width: 80px; /* taille idéale */
+            border-radius: 6px;
         }
     </style>
 </head>
@@ -192,7 +194,7 @@
 
     <!-- Bouton CoinGecko image + texte -->
     <a href="https://www.coingecko.com/fr" target="_blank" class="coingecko-button">
-        <img src="<a href="https://postimg.cc/R36Hskx8" target="_blank"><img src="https://i.postimg.cc/R36Hskx8/coingecko.jpg" alt="coingecko"></a>" alt="CoinGecko">
+        <img src="https://i.postimg.cc/R36Hskx8/coingecko.jpg" alt="CoinGecko">
         <span>Voir le prix de ton token</span>
     </a>
 </div>
