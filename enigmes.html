@@ -123,41 +123,30 @@
         }
 
         /* Panneau latéral fixe */
-        #side-panel {
-            position: fixed;
-            top: 100px;
-            right: 20px;
-            width: 260px;
-            background: rgba(0,0,0,0.6);
-            padding: 15px;
-            border-radius: 12px;
-            backdrop-filter: blur(4px);
-            color: white;
-            z-index: 999;
-        }
+ <div id="side-panel">
+    <h3>Indicateurs Crypto</h3>
 
-        #side-panel h3 {
-            margin-top: 0;
-            text-align: center;
-        }
+    <div class="panel-item panel-fear">
+        Indice Fear & Greed<br>
+        <a href="https://cryptorank.io/charts/fear-and-greed" target="_blank">Voir le graphique</a>
+    </div>
 
-        .panel-item {
-            margin-bottom: 20px;
-            text-align: center;
-        }
+    <div class="panel-item panel-rainbow">
+        Bitcoin Rainbow Chart<br>
+        <a href="https://coinmarketcap.com/charts/crypto-market-cycle-indicators/" target="_blank">Voir le graphique</a>
+    </div>
 
-        .panel-item img {
-            width: 100%;
-            border-radius: 8px;
-        }
+    <div class="panel-item panel-gas">
+        Frais Ethereum (Gas)<br>
+        <a href="https://etherscan.io/gastracker" target="_blank">Voir les frais</a>
+    </div>
 
-        .coingecko-link {
-            display: block;
-            text-align: center;
-            margin-top: 10px;
-            color: white;
-            text-decoration: none;
-        }
+    <a href="https://www.coingecko.com/fr" target="_blank" class="coingecko-link">
+        Voir le prix de ton token sur CoinGecko
+    </a>
+</div>
+
+
     </style>
 </head>
 
