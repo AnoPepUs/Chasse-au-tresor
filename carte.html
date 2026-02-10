@@ -15,30 +15,13 @@
 
   <style>
     body {
-    margin-top: 80px;
-}
-/* Rose des vents */
-#rose {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  width: 150px; /* Taille optimale */
-  opacity: 0.8;
-  z-index: 9999;
-  transition: transform 0.3s linear;
-}
+      margin-top: 80px;
+      margin: 0;
+      padding: 0;
+    }
 
-.rose-tourne {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-
-    body { margin: 0; padding: 0; }
     #map { width: 100vw; height: 100vh; }
+
     #coords {
       position: absolute;
       bottom: 10px;
@@ -49,10 +32,44 @@
       font-size: 14px;
       z-index: 9999;
     }
+
+    #zoom-level {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background: white;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 14px;
+      z-index: 9999;
+    }
+
     .popup-img {
       width: 200px;
       border-radius: 8px;
     }
+
+    /* Rose des vents */
+    #rose {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      width: 150px;
+      opacity: 0.8;
+      z-index: 9999;
+      transition: transform 0.3s linear;
+    }
+
+    .rose-tourne {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    /* Bouton règle */
     .measure-btn {
       background: white;
       border: 2px solid #666;
@@ -75,17 +92,20 @@
 </head>
 
 <body>
-<!-- Barre de navigation --> 
-  <nav> 
-    <a href="index.html" target="_blank">Accueil</a> 
-    <a href="carte.html" target="_blank">Carte</a> 
-    <a href="enigmes.html" target="_blank">Énigmes</a> 
-  </nav>
+
+<!-- Barre de navigation -->
+<nav>
+  <a href="index.html" target="_blank">Accueil</a>
+  <a href="carte.html" target="_blank">Carte</a>
+  <a href="enigmes.html" target="_blank">Énigmes</a>
+</nav>
+
 <!-- Rose des vents -->
-<img id="rose" src="https://i.postimg.cc/tTdPt3Sf/rose-sans-fond.png" class="rose-immobile">
-  
+<img id="rose" src="https://i.postimg.cc/tTdPt3Sf/rose-sans-fond.png">
+
 <div id="map"></div>
 <div id="coords">Lat: -- | Lng: --</div>
+<div id="zoom-level">Zoom: --</div>
 
 <script>
 const apiKey = "oqClb1tzK5aOivVVpyvd";
@@ -111,23 +131,34 @@ L.tileLayer(
 // Barre de recherche
 L.Control.geocoder().addTo(map);
 
-// Affichage des coordonnées GPS
+// Coordonnées
 map.on("mousemove", (e) => {
   document.getElementById("coords").innerHTML =
     `Lat: ${e.latlng.lat.toFixed(6)} | Lng: ${e.latlng.lng.toFixed(6)}`;
 });
 
+// Compteur de zoom
+map.on("zoomend", () => {
+  document.getElementById("zoom-level").innerHTML =
+    "Zoom: " + map.getZoom();
+});
+
+// Rose des vents
 const rose = document.getElementById("rose");
 
 map.on("move", () => {
-  const distance = map.distance(map.getCenter(), latlng);
+  let closestDistance = Infinity;
 
-  // Zone chaude : la rose tourne
-  if (distance < 2000 && distance > 500) {
+  map.eachLayer(layer => {
+    if (layer instanceof L.Marker) {
+      const d = map.distance(map.getCenter(), layer.getLatLng());
+      if (d < closestDistance) closestDistance = d;
+    }
+  });
+
+  if (closestDistance < 2000 && closestDistance > 500) {
     rose.classList.add("rose-tourne");
-  } 
-  // Zone froide : arrêt
-  else {
+  } else {
     rose.classList.remove("rose-tourne");
   }
 });
@@ -162,7 +193,6 @@ const MeasureControl = L.Control.extend({
 });
 
 new MeasureControl({ position: "topleft" }).addTo(map);
-
 
 // --- LOGIQUE DE MESURE ---
 map.on("click", (e) => {
@@ -200,7 +230,6 @@ map.on("click", (e) => {
   }
 });
 
-
 // Charger GeoJSON
 fetch("https://anopepus.github.io/Chasse-au-tresor/data/cryptos.geojson")
   .then(r => r.json())
@@ -208,7 +237,6 @@ fetch("https://anopepus.github.io/Chasse-au-tresor/data/cryptos.geojson")
 
     L.geoJSON(data, {
 
-      // Plus de polygones → Points uniquement
       pointToLayer: (feature, latlng) => {
         const p = feature.properties;
 
@@ -221,9 +249,9 @@ fetch("https://anopepus.github.io/Chasse-au-tresor/data/cryptos.geojson")
 
         const marker = L.marker(latlng, { icon });
 
-        // Icône visible seulement si zoom >= 10
+        // Diamant visible seulement si zoom >= 10
         map.on("zoomend", () => {
-         if (true) {
+          if (map.getZoom() >= 10) {
             if (!map.hasLayer(marker)) map.addLayer(marker);
           } else {
             if (map.hasLayer(marker)) map.removeLayer(marker);
@@ -234,7 +262,7 @@ fetch("https://anopepus.github.io/Chasse-au-tresor/data/cryptos.geojson")
         marker.on("click", () => {
           const distance = map.distance(map.getCenter(), latlng);
 
-          if (true) {
+          if (distance <= 500) {
             marker.bindPopup(`
               <h3>${p.name}</h3>
               <img class="popup-img" src="${p.image}" />
