@@ -10,8 +10,8 @@
       },
       "properties": {
         "name": "BTC",
-        "image": "URL_IMAGE",
-        "video": "URL_VIDEO",
+        "image": "https://i.postimg.cc/fywGb0Jt/Bitcoin.png",
+        "video": "https://dai.ly/k6smNTlqDAb43dESraU",
         "icon": "https://i.postimg.cc/Lqn2LL1D/diamand.gif"
       }
     },
