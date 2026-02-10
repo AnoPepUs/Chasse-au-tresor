@@ -29,7 +29,6 @@
         "icon": "https://i.postimg.cc/Lqn2LL1D/diamand.gif"
       }
     },
-
     {
       "type": "Feature",
       "geometry": {
@@ -42,6 +41,6 @@
         "video": "https://dai.ly/kPMwvlqsrvCWS9ESIwA",
         "icon": "https://i.postimg.cc/Lqn2LL1D/diamand.gif"
       }
-    },
+    }
   ]
 }
