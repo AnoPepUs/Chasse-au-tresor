@@ -28,7 +28,20 @@
         "video": "https://dai.ly/k2wmAo2ekCFDb4ESDII",
         "icon": "https://i.postimg.cc/Lqn2LL1D/diamand.gif"
       }
-    }
+    },
 
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-116.855779,37.561163]
+      },
+      "properties": {
+        "name": "BNB",
+        "image": "https://i.postimg.cc/J01fhBGH/Binance_Logo.png",
+        "video": "https://dai.ly/kPMwvlqsrvCWS9ESIwA",
+        "icon": "https://i.postimg.cc/Lqn2LL1D/diamand.gif"
+      }
+    },
   ]
 }
