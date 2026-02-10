@@ -156,7 +156,7 @@ map.on("move", () => {
     }
   });
 
-  if (closestDistance < 2000 && closestDistance > 500) {
+  if (closestDistance < 20000 && closestDistance > 500) {
     rose.classList.add("rose-tourne");
   } else {
     rose.classList.remove("rose-tourne");
@@ -249,9 +249,9 @@ fetch("https://anopepus.github.io/Chasse-au-tresor/data/cryptos.geojson")
 
         const marker = L.marker(latlng, { icon });
 
-        // Diamant visible seulement si zoom >= 10
+        // Diamant visible seulement si zoom >= 13
         map.on("zoomend", () => {
-          if (map.getZoom() >= 10) {
+          if (map.getZoom() >= 13) {
             if (!map.hasLayer(marker)) map.addLayer(marker);
           } else {
             if (map.hasLayer(marker)) map.removeLayer(marker);
