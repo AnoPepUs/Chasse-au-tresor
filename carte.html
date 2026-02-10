@@ -17,6 +17,25 @@
     body {
     margin-top: 80px;
 }
+/* Rose des vents */
+#rose {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  width: 150px; /* Taille optimale */
+  opacity: 0.8;
+  z-index: 9999;
+  transition: transform 0.3s linear;
+}
+
+.rose-tourne {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
 
     body { margin: 0; padding: 0; }
     #map { width: 100vw; height: 100vh; }
@@ -62,6 +81,8 @@
     <a href="carte.html" target="_blank">Carte</a> 
     <a href="enigmes.html" target="_blank">Énigmes</a> 
   </nav>
+<!-- Rose des vents -->
+<img id="rose" src="https://i.postimg.cc/tTdPt3Sf/rose-sans-fond.png" class="rose-immobile">
   
 <div id="map"></div>
 <div id="coords">Lat: -- | Lng: --</div>
@@ -96,6 +117,20 @@ map.on("mousemove", (e) => {
     `Lat: ${e.latlng.lat.toFixed(6)} | Lng: ${e.latlng.lng.toFixed(6)}`;
 });
 
+const rose = document.getElementById("rose");
+
+map.on("move", () => {
+  const distance = map.distance(map.getCenter(), latlng);
+
+  // Zone chaude : la rose tourne
+  if (distance < 2000 && distance > 500) {
+    rose.classList.add("rose-tourne");
+  } 
+  // Zone froide : arrêt
+  else {
+    rose.classList.remove("rose-tourne");
+  }
+});
 
 // --- BOUTON RÈGLE ---
 let measureActive = false;
