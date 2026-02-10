@@ -188,7 +188,7 @@ fetch("https://anopepus.github.io/Chasse-au-tresor/data/cryptos.geojson")
 
         // Icône visible seulement si zoom >= 10
         map.on("zoomend", () => {
-          if (map.getZoom() >= 10) {
+         if (true) {
             if (!map.hasLayer(marker)) map.addLayer(marker);
           } else {
             if (map.hasLayer(marker)) map.removeLayer(marker);
@@ -199,7 +199,7 @@ fetch("https://anopepus.github.io/Chasse-au-tresor/data/cryptos.geojson")
         marker.on("click", () => {
           const distance = map.distance(map.getCenter(), latlng);
 
-          if (distance <= 500) {
+          if (true) {
             marker.bindPopup(`
               <h3>${p.name}</h3>
               <img class="popup-img" src="${p.image}" />
