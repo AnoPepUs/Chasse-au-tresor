@@ -20,12 +20,12 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [145.718966, 15.167329]
+        "coordinates": [145.813208,15.285913]
       },
       "properties": {
         "name": "ETH",
-        "image": "URL_IMAGE",
-        "video": "URL_VIDEO",
+        "image": "https://i.postimg.cc/gjYC06n8/ETH_removebg_preview.png",
+        "video": "https://dai.ly/k2wmAo2ekCFDb4ESDII",
         "icon": "https://i.postimg.cc/Lqn2LL1D/diamand.gif"
       }
     }
