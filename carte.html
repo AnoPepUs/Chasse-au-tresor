@@ -149,6 +149,7 @@ const rose = document.getElementById("rose");
 map.on("move", () => {
   let closestDistance = Infinity;
 
+  // Trouver le diamant le plus proche
   map.eachLayer(layer => {
     if (layer instanceof L.Marker) {
       const d = map.distance(map.getCenter(), layer.getLatLng());
@@ -158,14 +159,13 @@ map.on("move", () => {
 
   const z = map.getZoom();
 
-  if (z >= 8 && closestDistance > 10000 && closestDistance < 50000) {
+  // Conditions pour faire tourner la rose
+  if (z >= 10 && closestDistance < 100000 && closestDistance > 500) {
     rose.classList.add("rose-tourne");
   } else {
     rose.classList.remove("rose-tourne");
   }
 });
-
-
 
 // --- BOUTON RÈGLE ---
 let measureActive = false;
