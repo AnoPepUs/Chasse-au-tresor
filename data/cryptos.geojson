@@ -29,6 +29,7 @@
         "icon": "https://i.postimg.cc/Lqn2LL1D/diamand.gif"
       }
     },
+
     {
       "type": "Feature",
       "geometry": {
@@ -41,6 +42,20 @@
         "video": "https://dai.ly/kPMwvlqsrvCWS9ESIwA",
         "icon": "https://i.postimg.cc/Lqn2LL1D/diamand.gif"
       }
-    }
+    },
+
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [2.294260,48.85815]
+      },
+      "properties": {
+        "name": "XTZ",
+        "image": "https://i.postimg.cc/vTQJm6c2/XTZ.png",
+        "video": "https://dai.ly/k5wnALZoMb6ltMET1QA",
+        "icon": "https://i.postimg.cc/Lqn2LL1D/diamand.gif"
+      }
+    },
   ]
 }
