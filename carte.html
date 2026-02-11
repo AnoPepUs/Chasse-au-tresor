@@ -158,7 +158,7 @@ map.on("move", () => {
 
   const z = map.getZoom();
 
-  if (z >= 8 && closestDistance > 500 && closestDistance < 50000) {
+  if (z >= 8 && closestDistance > 10000 && closestDistance < 50000) {
     rose.classList.add("rose-tourne");
   } else {
     rose.classList.remove("rose-tourne");
