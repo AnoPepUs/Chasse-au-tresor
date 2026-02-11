@@ -146,15 +146,25 @@ map.on("zoomend", () => {
 // Rose des vents
 const rose = document.getElementById("rose");
 
-map.on("zoomend", () => {
+map.on("move", () => {
+  let closestDistance = Infinity;
+
+  map.eachLayer(layer => {
+    if (layer instanceof L.Marker) {
+      const d = map.distance(map.getCenter(), layer.getLatLng());
+      if (d < closestDistance) closestDistance = d;
+    }
+  });
+
   const z = map.getZoom();
 
-  if (z >= 10 && z < 15) {
+  if (z >= 10 && closestDistance > 500 && closestDistance < 2000) {
     rose.classList.add("rose-tourne");
   } else {
     rose.classList.remove("rose-tourne");
   }
 });
+
 
 
 // --- BOUTON RÈGLE ---
