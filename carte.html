@@ -253,14 +253,14 @@ fetch("https://anopepus.github.io/Chasse-au-tresor/data/cryptos.geojson")
 
         const marker = L.marker(latlng, { icon });
 
-        // Diamant visible seulement si zoom >= 11
-        map.on("zoomend", () => {
-          if (map.getZoom() >= 11) {
-            if (!map.hasLayer(marker)) map.addLayer(marker);
-          } else {
-            if (map.hasLayer(marker)) map.removeLayer(marker);
-          }
-        });
+        // Diamant visible seulement si zoom >= 13
+      map.on("zoomend", () => {
+  if (map.getZoom() >= 13) {
+    if (!map.hasLayer(marker)) map.addLayer(marker);
+  } else {
+    if (map.hasLayer(marker)) map.removeLayer(marker);
+  }
+});
 
         // Clic sur le diamant
         marker.on("click", () => {
