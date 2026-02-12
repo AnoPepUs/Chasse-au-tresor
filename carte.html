@@ -9,47 +9,29 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+  <!-- Leaflet Providers (IMPORTANT POUR LES TUILES STABLES) -->
+  <script src="https://unpkg.com/leaflet-providers@1.13.0/leaflet-providers.js"></script>
+
   <!-- Geocoder -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
   <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
   <style>
-    body {
-      margin-top: 80px;
-      margin: 0;
-      padding: 0;
-    }
-
+    body { margin: 0; padding: 0; }
     #map { width: 100vw; height: 100vh; }
 
-    #coords {
+    #coords, #zoom-level {
       position: absolute;
       bottom: 10px;
-      left: 10px;
       background: white;
       padding: 6px 10px;
       border-radius: 6px;
       font-size: 14px;
       z-index: 9999;
     }
+    #coords { left: 10px; }
+    #zoom-level { right: 10px; }
 
-    #zoom-level {
-      position: absolute;
-      bottom: 10px;
-      right: 10px;
-      background: white;
-      padding: 6px 10px;
-      border-radius: 6px;
-      font-size: 14px;
-      z-index: 9999;
-    }
-
-    .popup-img {
-      width: 200px;
-      border-radius: 8px;
-    }
-
-    /* Rose des vents */
     #rose {
       position: fixed;
       bottom: 20px;
@@ -59,17 +41,9 @@
       z-index: 9999;
       transition: transform 0.3s linear;
     }
+    .rose-tourne { animation: spin 1s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-    .rose-tourne {
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to   { transform: rotate(360deg); }
-    }
-
-    /* Bouton règle */
     .measure-btn {
       background: white;
       border: 2px solid #666;
@@ -93,14 +67,6 @@
 
 <body>
 
-<!-- Barre de navigation -->
-<nav>
-  <a href="index.html" target="_blank">Accueil</a>
-  <a href="carte.html" target="_blank">Carte</a>
-  <a href="enigmes.html" target="_blank">Énigmes</a>
-</nav>
-
-<!-- Rose des vents -->
 <img id="rose" src="https://i.postimg.cc/tTdPt3Sf/rose-sans-fond.png">
 
 <div id="map"></div>
@@ -118,28 +84,16 @@ const map = L.map('map', {
 }).setView([20, 0], 2);
 
 /* -----------------------------
-   FOND SATELLITE (ESRI)
+   SATELLITE STABLE (ESRI VIA PROVIDERS)
 ------------------------------ */
 
-L.tileLayer(
-  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{x}/{y}',
-  {
-    maxZoom: 19,
-    attribution: 'Tiles © Esri — Source: Esri, Maxar, Earthstar Geographics'
-  }
-).addTo(map);
+L.tileLayer.provider('Esri.WorldImagery').addTo(map);
 
 /* -----------------------------
-   LABELS + FRONTIÈRES (HYBRID)
+   LABELS STABLES (HYBRID)
 ------------------------------ */
 
-L.tileLayer(
-  'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{x}/{y}',
-  {
-    maxZoom: 19,
-    attribution: 'Labels © Esri'
-  }
-).addTo(map);
+L.tileLayer.provider('Esri.WorldBoundariesAndPlaces').addTo(map);
 
 /* -----------------------------
    BARRE DE RECHERCHE
@@ -148,7 +102,7 @@ L.tileLayer(
 L.Control.geocoder().addTo(map);
 
 /* -----------------------------
-   AFFICHAGE COORDONNÉES
+   COORDONNÉES
 ------------------------------ */
 
 map.on("mousemove", (e) => {
@@ -157,7 +111,7 @@ map.on("mousemove", (e) => {
 });
 
 /* -----------------------------
-   NIVEAU DE ZOOM
+   ZOOM
 ------------------------------ */
 
 map.on("zoomend", () => {
