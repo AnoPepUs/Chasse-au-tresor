@@ -13,6 +13,9 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
   <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
+  <!-- VectorGrid -->
+  <script src="https://unpkg.com/leaflet.vectorgrid/dist/Leaflet.VectorGrid.bundled.js"></script>
+
   <style>
     body { margin: 0; padding: 0; }
     #map { width: 100vw; height: 100vh; }
@@ -98,16 +101,55 @@ L.tileLayer(
 ).addTo(map);
 
 /* -----------------------------
-   LABELS + VILLES (CARTODB)
-   (calque transparent, pas de puzzle)
+   LABELS VECTORIELS OSM (CLASSIC)
 ------------------------------ */
 
-L.tileLayer(
-  'https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png',
+const osmVector = L.vectorGrid.protobuf(
+  "https://tile.openstreetmap.org/{z}/{x}/{y}.pbf",
   {
+    vectorTileLayerStyles: {
+      // Routes en gris clair
+      highway: {
+        weight: 1.5,
+        color: "#cccccc",
+        opacity: 0.9
+      },
+      // Frontières
+      boundary: {
+        weight: 1,
+        color: "#6600cc",
+        opacity: 0.8
+      },
+      // Bâtiments
+      building: {
+        weight: 1,
+        color: "#999999",
+        fillColor: "#bbbbbb",
+        fillOpacity: 0.6
+      },
+      // Noms de villes / POI
+      place: {
+        weight: 1,
+        color: "#000000",
+        fillColor: "#000000",
+        fillOpacity: 1
+      },
+      poi: {
+        weight: 1,
+        color: "#0055ff",
+        fillColor: "#0055ff",
+        fillOpacity: 1
+      },
+      // Par défaut
+      default: {
+        weight: 1,
+        color: "#888888",
+        fillColor: "#aaaaaa",
+        fillOpacity: 0.5
+      }
+    },
     maxZoom: 19,
-    subdomains: 'abcd',
-    attribution: 'Labels © CartoDB, OSM contributors'
+    attribution: "© OpenStreetMap contributors"
   }
 ).addTo(map);
 
@@ -255,7 +297,6 @@ fetch("https://anopepus.github.io/Chasse-au-tresor/data/cryptos.geojson")
 
         const marker = L.marker(latlng, { icon });
 
-        // Affichage des diamants selon le zoom
         map.on("zoomend", () => {
           if (map.getZoom() >= 12) {
             if (!map.hasLayer(marker)) map.addLayer(marker);
@@ -264,7 +305,6 @@ fetch("https://anopepus.github.io/Chasse-au-tresor/data/cryptos.geojson")
           }
         });
 
-        // Clic sur le diamant
         marker.on("click", () => {
           const distance = map.distance(map.getCenter(), latlng);
 
