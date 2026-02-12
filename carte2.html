@@ -82,76 +82,67 @@
 /* -----------------------------
    INITIALISATION DE LA CARTE
 ------------------------------ */
+/* -----------------------------
+   LABELS VECTORIELS OSM
+------------------------------ */
+const osmVector = L.vectorGrid.protobuf(
+  "https://tile.openstreetmap.org/{z}/{x}/{y}.pbf",
+  {
+    vectorTileLayerStyles: {
+      highway: { color: "#cccccc", weight: 1.5 },
+      boundary: { color: "#6600cc", weight: 1 },
+      building: { color: "#999999", fillColor: "#bbbbbb", fillOpacity: 0.6 },
+      place: { color: "#000000", fillColor: "#000000", fillOpacity: 1 },
+      poi: { color: "#0055ff", fillColor: "#0055ff", fillOpacity: 1 },
+      default: { color: "#888888", fillColor: "#aaaaaa", fillOpacity: 0.5 }
+    },
+    maxZoom: 19,
+    attribution: "© OpenStreetMap contributors"
+  }
+);
 
-const map = L.map('map', {
-  minZoom: 2,
-  maxZoom: 20
-}).setView([20, 0], 2);
 
 /* -----------------------------
-   CARTE ESRI (COMPATIBLE LEAFLET)
+   FOND OSM RASTER
 ------------------------------ */
-
-L.tileLayer(
+const osmRaster = L.tileLayer(
   "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
   {
     maxZoom: 19,
     attribution: "© OpenStreetMap contributors"
   }
-).addTo(map);
+);
 
 /* -----------------------------
-   LABELS VECTORIELS OSM (CLASSIC)
+   FOND SATELLITE SENTINEL-2
 ------------------------------ */
+const sentinel = L.tileLayer(
+  "https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless_3857/default/GoogleMapsCompatible/{z}/{y}/{x}.jpg",
+  {
+    maxZoom: 18,
+    attribution: "Sentinel-2 cloudless by EOX"
+  }
+);
 
+/* -----------------------------
+   LABELS VECTORIELS OSM
+------------------------------ */
 const osmVector = L.vectorGrid.protobuf(
   "https://tile.openstreetmap.org/{z}/{x}/{y}.pbf",
   {
     vectorTileLayerStyles: {
-      // Routes en gris clair
-      highway: {
-        weight: 1.5,
-        color: "#cccccc",
-        opacity: 0.9
-      },
-      // Frontières
-      boundary: {
-        weight: 1,
-        color: "#6600cc",
-        opacity: 0.8
-      },
-      // Bâtiments
-      building: {
-        weight: 1,
-        color: "#999999",
-        fillColor: "#bbbbbb",
-        fillOpacity: 0.6
-      },
-      // Noms de villes / POI
-      place: {
-        weight: 1,
-        color: "#000000",
-        fillColor: "#000000",
-        fillOpacity: 1
-      },
-      poi: {
-        weight: 1,
-        color: "#0055ff",
-        fillColor: "#0055ff",
-        fillOpacity: 1
-      },
-      // Par défaut
-      default: {
-        weight: 1,
-        color: "#888888",
-        fillColor: "#aaaaaa",
-        fillOpacity: 0.5
-      }
+      highway: { color: "#cccccc", weight: 1.5 },
+      boundary: { color: "#6600cc", weight: 1 },
+      building: { color: "#999999", fillColor: "#bbbbbb", fillOpacity: 0.6 },
+      place: { color: "#000000", fillColor: "#000000", fillOpacity: 1 },
+      poi: { color: "#0055ff", fillColor: "#0055ff", fillOpacity: 1 },
+      default: { color: "#888888", fillColor: "#aaaaaa", fillOpacity: 0.5 }
     },
     maxZoom: 19,
     attribution: "© OpenStreetMap contributors"
   }
-).addTo(map);
+);
+
 
 /* -----------------------------
    BARRE DE RECHERCHE
