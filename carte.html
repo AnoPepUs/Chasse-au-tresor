@@ -9,9 +9,6 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-  <!-- Leaflet Providers (IMPORTANT POUR LES TUILES STABLES) -->
-  <script src="https://unpkg.com/leaflet-providers@1.13.0/leaflet-providers.js"></script>
-
   <!-- Geocoder -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
   <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
@@ -62,6 +59,11 @@
       color: white;
       border-color: #0056b3;
     }
+
+    .popup-img {
+      width: 200px;
+      border-radius: 8px;
+    }
   </style>
 </head>
 
@@ -84,20 +86,29 @@ const map = L.map('map', {
 }).setView([20, 0], 2);
 
 /* -----------------------------
-   SATELLITE STABLE (ESRI VIA PROVIDERS)
+   FOND SATELLITE (ESRI)
 ------------------------------ */
+
 L.tileLayer(
   'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{x}/{y}',
-  { maxZoom: 19 }
+  {
+    maxZoom: 19,
+    attribution: 'Tiles © Esri — Source: Esri, Maxar, Earthstar Geographics'
+  }
 ).addTo(map);
 
-
 /* -----------------------------
-   LABELS STABLES (HYBRID)
+   LABELS + VILLES (CARTODB)
+   (calque transparent, pas de puzzle)
 ------------------------------ */
+
 L.tileLayer(
-  'https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{x}/{y}',
-  { maxZoom: 19 }
+  'https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}.png',
+  {
+    maxZoom: 19,
+    subdomains: 'abcd',
+    attribution: 'Labels © CartoDB, OSM contributors'
+  }
 ).addTo(map);
 
 /* -----------------------------
@@ -244,6 +255,7 @@ fetch("https://anopepus.github.io/Chasse-au-tresor/data/cryptos.geojson")
 
         const marker = L.marker(latlng, { icon });
 
+        // Affichage des diamants selon le zoom
         map.on("zoomend", () => {
           if (map.getZoom() >= 12) {
             if (!map.hasLayer(marker)) map.addLayer(marker);
@@ -252,6 +264,7 @@ fetch("https://anopepus.github.io/Chasse-au-tresor/data/cryptos.geojson")
           }
         });
 
+        // Clic sur le diamant
         marker.on("click", () => {
           const distance = map.distance(map.getCenter(), latlng);
 
