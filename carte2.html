@@ -93,14 +93,12 @@ const map = L.map('map', {
 ------------------------------ */
 
 L.tileLayer(
-  "https://clarity.maptiles.arcgis.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{x}/{y}",
+  "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
   {
     maxZoom: 19,
-    attribution: "Tiles © Esri — Clarity Imagery"
+    attribution: "© OpenStreetMap contributors"
   }
 ).addTo(map);
-
-
 
 /* -----------------------------
    LABELS VECTORIELS OSM (CLASSIC)
