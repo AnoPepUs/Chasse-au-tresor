@@ -107,27 +107,28 @@
 <div id="coords">Lat: -- | Lng: --</div>
 <div id="zoom-level">Zoom: --</div>
 
-<script>
-const apiKey = "oqClb1tzK5aOivVVpyvd";
-
 // Carte
 const map = L.map('map', {
   minZoom: 2,
   maxZoom: 20
 }).setView([20, 0], 2);
 
-// Satellite
-L.tileLayer(
-  `https://api.maptiler.com/maps/hybrid/{z}/{x}/{y}.jpg?key=${apiKey}`,
-  { maxZoom: 20, attribution: '© MapTiler © OpenStreetMap' }
+  L.tileLayer(
+  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{x}/{y}',
+  {
+    maxZoom: 19,
+    attribution: 'Tiles © Esri — Source: Esri, Maxar, Earthstar Geographics'
+  }
 ).addTo(map);
 
-// Labels
-L.tileLayer(
-  `https://api.maptiler.com/maps/hybrid/256/{z}/{x}/{y}.png?key=${apiKey}`,
-  { maxZoom: 20, opacity: 1 }
+ L.tileLayer(
+  'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{x}/{y}',
+  {
+    maxZoom: 19,
+    attribution: 'Labels © Esri'
+  }
 ).addTo(map);
-
+ 
 // Barre de recherche
 L.Control.geocoder().addTo(map);
 
