@@ -89,16 +89,17 @@ const map = L.map('map', {
 }).setView([20, 0], 2);
 
 /* -----------------------------
-   BING AERIAL (COMPATIBLE LEAFLET)
+   CARTE ESRI (COMPATIBLE LEAFLET)
 ------------------------------ */
 
 L.tileLayer(
-  "https://tiles.stadiamaps.com/tiles/bing/aerial/{z}/{x}/{y}.jpg",
+  "https://clarity.maptiles.arcgis.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{x}/{y}",
   {
     maxZoom: 19,
-    attribution: "© Bing Maps, via Stadia Maps"
+    attribution: "Tiles © Esri — Clarity Imagery"
   }
 ).addTo(map);
+
 
 
 /* -----------------------------
