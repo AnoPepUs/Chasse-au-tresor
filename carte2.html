@@ -80,37 +80,10 @@
 
 <script>
 /* -----------------------------
-   INITIALISATION DE LA CARTE
+   FONDS DE CARTE
 ------------------------------ */
-  const map = L.map('map', {
-  minZoom: 2,
-  maxZoom: 20,
-  layers: [osmRaster, osmVector]  // OSM + labels par défaut
-}).setView([20, 0], 2);
 
-/* -----------------------------
-   LABELS VECTORIELS OSM
------------------------------- */
-const osmVector = L.vectorGrid.protobuf(
-  "https://tile.openstreetmap.org/{z}/{x}/{y}.pbf",
-  {
-    vectorTileLayerStyles: {
-      highway: { color: "#cccccc", weight: 1.5 },
-      boundary: { color: "#6600cc", weight: 1 },
-      building: { color: "#999999", fillColor: "#bbbbbb", fillOpacity: 0.6 },
-      place: { color: "#000000", fillColor: "#000000", fillOpacity: 1 },
-      poi: { color: "#0055ff", fillColor: "#0055ff", fillOpacity: 1 },
-      default: { color: "#888888", fillColor: "#aaaaaa", fillOpacity: 0.5 }
-    },
-    maxZoom: 19,
-    attribution: "© OpenStreetMap contributors"
-  }
-);
-
-
-/* -----------------------------
-   FOND OSM RASTER
------------------------------- */
+// OSM raster (marche partout)
 const osmRaster = L.tileLayer(
   "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
   {
@@ -119,9 +92,7 @@ const osmRaster = L.tileLayer(
   }
 );
 
-/* -----------------------------
-   FOND SATELLITE SENTINEL-2
------------------------------- */
+// Satellite Sentinel‑2 (open-source, jamais bloqué)
 const sentinel = L.tileLayer(
   "https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless_3857/default/GoogleMapsCompatible/{z}/{y}/{x}.jpg",
   {
@@ -133,6 +104,7 @@ const sentinel = L.tileLayer(
 /* -----------------------------
    LABELS VECTORIELS OSM
 ------------------------------ */
+
 const osmVector = L.vectorGrid.protobuf(
   "https://tile.openstreetmap.org/{z}/{x}/{y}.pbf",
   {
@@ -148,12 +120,24 @@ const osmVector = L.vectorGrid.protobuf(
     attribution: "© OpenStreetMap contributors"
   }
 );
+
+/* -----------------------------
+   INITIALISATION DE LA CARTE
+------------------------------ */
+
+const map = L.map('map', {
+  minZoom: 2,
+  maxZoom: 20,
+  layers: [osmRaster, osmVector]
+}).setView([20, 0], 2);
+
 /* -----------------------------
    CONTROLE DES COUCHES
 ------------------------------ */
+
 const baseMaps = {
   "OSM (clair)": osmRaster,
-  "Satellite (Sentinel-2)": sentinel
+  "Satellite (Sentinel‑2)": sentinel
 };
 
 const overlayMaps = {
@@ -161,7 +145,6 @@ const overlayMaps = {
 };
 
 L.control.layers(baseMaps, overlayMaps, { collapsed: false }).addTo(map);
-
 
 /* -----------------------------
    BARRE DE RECHERCHE
