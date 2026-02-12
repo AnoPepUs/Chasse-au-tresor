@@ -93,202 +93,228 @@
 
 <body>
 
-  <!-- Barre de navigation -->
-  <nav>
-    <a href="index.html" target="_blank">Accueil</a>
-    <a href="carte.html" target="_blank">Carte</a>
-    <a href="enigmes.html" target="_blank">Énigmes</a>
-  </nav>
+<!-- Barre de navigation -->
+<nav>
+  <a href="index.html" target="_blank">Accueil</a>
+  <a href="carte.html" target="_blank">Carte</a>
+  <a href="enigmes.html" target="_blank">Énigmes</a>
+</nav>
 
-  <!-- Rose des vents -->
-  <img id="rose" src="https://i.postimg.cc/tTdPt3Sf/rose-sans-fond.png">
+<!-- Rose des vents -->
+<img id="rose" src="https://i.postimg.cc/tTdPt3Sf/rose-sans-fond.png">
 
-  <div id="map"></div>
-  <div id="coords">Lat: -- | Lng: --</div>
-  <div id="zoom-level">Zoom: --</div>
+<div id="map"></div>
+<div id="coords">Lat: -- | Lng: --</div>
+<div id="zoom-level">Zoom: --</div>
 
-  <script>
-  // Carte
-  const map = L.map('map', {
-    minZoom: 2,
-    maxZoom: 20
-  }).setView([20, 0], 2);
+<script>
+/* -----------------------------
+   INITIALISATION DE LA CARTE
+------------------------------ */
 
-  // Fond satellite Esri
-  L.tileLayer(
-    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{x}/{y}',
-    {
-      maxZoom: 19,
-      attribution: 'Tiles © Esri — Source: Esri, Maxar, Earthstar Geographics'
+const map = L.map('map', {
+  minZoom: 2,
+  maxZoom: 20
+}).setView([20, 0], 2);
+
+/* -----------------------------
+   FOND SATELLITE (ESRI)
+------------------------------ */
+
+L.tileLayer(
+  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{x}/{y}',
+  {
+    maxZoom: 19,
+    attribution: 'Tiles © Esri — Source: Esri, Maxar, Earthstar Geographics'
+  }
+).addTo(map);
+
+/* -----------------------------
+   LABELS + FRONTIÈRES (HYBRID)
+------------------------------ */
+
+L.tileLayer(
+  'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{x}/{y}',
+  {
+    maxZoom: 19,
+    attribution: 'Labels © Esri'
+  }
+).addTo(map);
+
+/* -----------------------------
+   BARRE DE RECHERCHE
+------------------------------ */
+
+L.Control.geocoder().addTo(map);
+
+/* -----------------------------
+   AFFICHAGE COORDONNÉES
+------------------------------ */
+
+map.on("mousemove", (e) => {
+  document.getElementById("coords").innerHTML =
+    `Lat: ${e.latlng.lat.toFixed(6)} | Lng: ${e.latlng.lng.toFixed(6)}`;
+});
+
+/* -----------------------------
+   NIVEAU DE ZOOM
+------------------------------ */
+
+map.on("zoomend", () => {
+  document.getElementById("zoom-level").innerHTML =
+    "Zoom: " + map.getZoom();
+});
+
+/* -----------------------------
+   ROSE DES VENTS
+------------------------------ */
+
+const rose = document.getElementById("rose");
+
+map.on("move", () => {
+  let closestDistance = Infinity;
+
+  map.eachLayer(layer => {
+    if (layer instanceof L.Marker) {
+      const d = map.distance(map.getCenter(), layer.getLatLng());
+      if (d < closestDistance) closestDistance = d;
     }
-  ).addTo(map);
-
-  // Labels + frontières (Hybrid)
-  L.tileLayer(
-    'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{x}/{y}',
-    {
-      maxZoom: 19,
-      attribution: 'Labels © Esri'
-    }
-  ).addTo(map);
-
-  // Barre de recherche
-  L.Control.geocoder().addTo(map);
-
-  // Coordonnées
-  map.on("mousemove", (e) => {
-    document.getElementById("coords").innerHTML =
-      `Lat: ${e.latlng.lat.toFixed(6)} | Lng: ${e.latlng.lng.toFixed(6)}`;
   });
 
-  // Compteur de zoom
-  map.on("zoomend", () => {
-    document.getElementById("zoom-level").innerHTML =
-      "Zoom: " + map.getZoom();
-  });
+  const z = map.getZoom();
 
-  // Rose des vents
-  const rose = document.getElementById("rose");
+  if (z >= 12 && closestDistance < 50000 && closestDistance > 500) {
+    rose.classList.add("rose-tourne");
+  } else {
+    rose.classList.remove("rose-tourne");
+  }
+});
 
-  map.on("move", () => {
-    let closestDistance = Infinity;
+/* -----------------------------
+   BOUTON RÈGLE
+------------------------------ */
 
-    // Trouver le diamant le plus proche
-    map.eachLayer(layer => {
-      if (layer instanceof L.Marker) {
-        const d = map.distance(map.getCenter(), layer.getLatLng());
-        if (d < closestDistance) closestDistance = d;
+let measureActive = false;
+let startPoint = null;
+let tempLine = null;
+let tempMarkerA = null;
+let tempMarkerB = null;
+
+const MeasureControl = L.Control.extend({
+  onAdd: function() {
+    const btn = L.DomUtil.create("div", "measure-btn");
+    btn.innerHTML = "📏";
+
+    btn.onclick = () => {
+      measureActive = !measureActive;
+      btn.classList.toggle("active");
+
+      if (!measureActive) {
+        startPoint = null;
+        if (tempLine) map.removeLayer(tempLine);
+        if (tempMarkerA) map.removeLayer(tempMarkerA);
+        if (tempMarkerB) map.removeLayer(tempMarkerB);
       }
-    });
+    };
 
-    const z = map.getZoom();
+    L.DomEvent.disableClickPropagation(btn);
+    return btn;
+  }
+});
 
-    // Conditions pour faire tourner la rose
-    if (z >= 12 && closestDistance < 50000 && closestDistance > 500) {
-      rose.classList.add("rose-tourne");
-    } else {
-      rose.classList.remove("rose-tourne");
-    }
-  });
+new MeasureControl({ position: "topleft" }).addTo(map);
 
-  // --- BOUTON RÈGLE ---
-  let measureActive = false;
-  let startPoint = null;
-  let tempLine = null;
-  let tempMarkerA = null;
-  let tempMarkerB = null;
+/* -----------------------------
+   LOGIQUE DE MESURE
+------------------------------ */
 
-  const MeasureControl = L.Control.extend({
-    onAdd: function() {
-      const btn = L.DomUtil.create("div", "measure-btn");
-      btn.innerHTML = "📏";
+map.on("click", (e) => {
+  if (!measureActive) return;
 
-      btn.onclick = () => {
-        measureActive = !measureActive;
-        btn.classList.toggle("active");
+  if (!startPoint) {
+    startPoint = e.latlng;
 
-        if (!measureActive) {
-          startPoint = null;
-          if (tempLine) map.removeLayer(tempLine);
-          if (tempMarkerA) map.removeLayer(tempMarkerA);
-          if (tempMarkerB) map.removeLayer(tempMarkerB);
-        }
-      };
+    if (tempMarkerA) map.removeLayer(tempMarkerA);
+    if (tempMarkerB) map.removeLayer(tempMarkerB);
+    if (tempLine) map.removeLayer(tempLine);
 
-      L.DomEvent.disableClickPropagation(btn);
-      return btn;
-    }
-  });
+    tempMarkerA = L.marker(startPoint, { opacity: 0.7 }).addTo(map);
 
-  new MeasureControl({ position: "topleft" }).addTo(map);
+  } else {
+    const endPoint = e.latlng;
 
-  // --- LOGIQUE DE MESURE ---
-  map.on("click", (e) => {
-    if (!measureActive) return;
+    if (tempMarkerB) map.removeLayer(tempMarkerB);
+    tempMarkerB = L.marker(endPoint, { opacity: 0.7 }).addTo(map);
 
-    if (!startPoint) {
-      startPoint = e.latlng;
+    if (tempLine) map.removeLayer(tempLine);
+    tempLine = L.polyline([startPoint, endPoint], {
+      color: "#00aaff",
+      weight: 3
+    }).addTo(map);
 
-      if (tempMarkerA) map.removeLayer(tempMarkerA);
-      if (tempMarkerB) map.removeLayer(tempMarkerB);
-      if (tempLine) map.removeLayer(tempLine);
+    const d = map.distance(startPoint, endPoint);
+    const txt = d > 1000
+      ? (d / 1000).toFixed(2) + " km"
+      : Math.round(d) + " m";
 
-      tempMarkerA = L.marker(startPoint, { opacity: 0.7 }).addTo(map);
+    tempLine.bindPopup("Distance : " + txt).openPopup();
 
-    } else {
-      const endPoint = e.latlng;
+    startPoint = null;
+  }
+});
 
-      if (tempMarkerB) map.removeLayer(tempMarkerB);
-      tempMarkerB = L.marker(endPoint, { opacity: 0.7 }).addTo(map);
+/* -----------------------------
+   CHARGEMENT GEOJSON
+------------------------------ */
 
-      if (tempLine) map.removeLayer(tempLine);
-      tempLine = L.polyline([startPoint, endPoint], {
-        color: "#00aaff",
-        weight: 3
-      }).addTo(map);
+fetch("https://anopepus.github.io/Chasse-au-tresor/data/cryptos.geojson")
+  .then(r => r.json())
+  .then(data => {
 
-      const d = map.distance(startPoint, endPoint);
-      const txt = d > 1000
-        ? (d / 1000).toFixed(2) + " km"
-        : Math.round(d) + " m";
+    L.geoJSON(data, {
 
-      tempLine.bindPopup("Distance : " + txt).openPopup();
+      pointToLayer: (feature, latlng) => {
+        const p = feature.properties;
 
-      startPoint = null;
-    }
-  });
+        const icon = L.icon({
+          iconUrl: p.icon,
+          iconSize: [48, 48],
+          iconAnchor: [24, 24],
+          popupAnchor: [0, -24]
+        });
 
-  // Charger GeoJSON
-  fetch("https://anopepus.github.io/Chasse-au-tresor/data/cryptos.geojson")
-    .then(r => r.json())
-    .then(data => {
+        const marker = L.marker(latlng, { icon });
 
-      L.geoJSON(data, {
+        map.on("zoomend", () => {
+          if (map.getZoom() >= 12) {
+            if (!map.hasLayer(marker)) map.addLayer(marker);
+          } else {
+            if (map.hasLayer(marker)) map.removeLayer(marker);
+          }
+        });
 
-        pointToLayer: (feature, latlng) => {
-          const p = feature.properties;
+        marker.on("click", () => {
+          const distance = map.distance(map.getCenter(), latlng);
 
-          const icon = L.icon({
-            iconUrl: p.icon,
-            iconSize: [48, 48],
-            iconAnchor: [24, 24],
-            popupAnchor: [0, -24]
-          });
+          if (distance <= 500) {
+            marker.bindPopup(`
+              <h3>${p.name}</h3>
+              <img class="popup-img" src="${p.image}" />
+              <br><br>
+              <a href="${p.video}" target="_blank">Voir la vidéo</a>
+            `).openPopup();
+          } else {
+            alert("Tu es trop loin du trésor, rapproche-toi !");
+          }
+        });
 
-          const marker = L.marker(latlng, { icon });
-
-          // Diamant visible seulement si zoom >
-          map.on("zoomend", () => {
-            if (map.getZoom() >= 12) {
-              if (!map.hasLayer(marker)) map.addLayer(marker);
-            } else {
-              if (map.hasLayer(marker)) map.removeLayer(marker);
-            }
-          });
-
-          // Clic sur le diamant
-          marker.on("click", () => {
-            const distance = map.distance(map.getCenter(), latlng);
-
-            if (distance <= 500) {
-              marker.bindPopup(`
-                <h3>${p.name}</h3>
-                <img class="popup-img" src="${p.image}" />
-                <br><br>
-                <a href="${p.video}" target="_blank">Voir la vidéo</a>
-              `).openPopup();
-            } else {
-              alert("Tu es trop loin du trésor, rapproche-toi !");
-            }
-          });
-
-          return marker;
-        }
-
-      });
+        return marker;
+      }
 
     });
-  </script>
+
+  });
+</script>
 
 </body>
 </html>
