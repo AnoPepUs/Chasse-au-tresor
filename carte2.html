@@ -82,6 +82,12 @@
 /* -----------------------------
    INITIALISATION DE LA CARTE
 ------------------------------ */
+  const map = L.map('map', {
+  minZoom: 2,
+  maxZoom: 20,
+  layers: [osmRaster, osmVector]  // OSM + labels par défaut
+}).setView([20, 0], 2);
+
 /* -----------------------------
    LABELS VECTORIELS OSM
 ------------------------------ */
