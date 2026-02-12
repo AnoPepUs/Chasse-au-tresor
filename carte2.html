@@ -89,17 +89,17 @@ const map = L.map('map', {
 }).setView([20, 0], 2);
 
 /* -----------------------------
-   BING AERIAL (SANS LABELS)
+   BING AERIAL (COMPATIBLE LEAFLET)
 ------------------------------ */
 
 L.tileLayer(
-  "https://ecn.t{subdomain}.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=1",
+  "https://tiles.stadiamaps.com/tiles/bing/aerial/{z}/{x}/{y}.jpg",
   {
-    subdomains: ["0", "1", "2", "3", "4"],
     maxZoom: 19,
-    attribution: "© Bing Maps"
+    attribution: "© Bing Maps, via Stadia Maps"
   }
 ).addTo(map);
+
 
 /* -----------------------------
    LABELS VECTORIELS OSM (CLASSIC)
