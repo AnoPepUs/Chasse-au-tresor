@@ -67,10 +67,26 @@
       width: 200px;
       border-radius: 8px;
     }
+
+    #sat-warning {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #ffdddd;
+      border: 1px solid #ff5555;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 14px;
+      display: none;
+      z-index: 99999;
+    }
   </style>
 </head>
 
 <body>
+
+<div id="sat-warning">⚠️ Le fond satellite haute résolution est bloqué par votre réseau.</div>
 
 <img id="rose" src="https://i.postimg.cc/tTdPt3Sf/rose-sans-fond.png">
 
@@ -83,16 +99,16 @@
    FONDS DE CARTE
 ------------------------------ */
 
-// OSM raster (marche partout)
-const osmRaster = L.tileLayer(
-  "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+// OSM Voyager (anglais, propre)
+const voyager = L.tileLayer(
+  "https://cartodb-basemaps-a.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png",
   {
     maxZoom: 19,
-    attribution: "© OpenStreetMap contributors"
+    attribution: "© CartoDB"
   }
 );
 
-// Satellite Sentinel‑2 (open-source, jamais bloqué)
+// Satellite Sentinel‑2 (flou mais mondial)
 const sentinel = L.tileLayer(
   "https://tiles.maps.eox.at/wmts/1.0.0/s2cloudless_3857/default/GoogleMapsCompatible/{z}/{y}/{x}.jpg",
   {
@@ -100,6 +116,20 @@ const sentinel = L.tileLayer(
     attribution: "Sentinel-2 cloudless by EOX"
   }
 );
+
+// Satellite haute résolution (Bing/Esri) — BLOQUÉ chez toi
+const highRes = L.tileLayer(
+  "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{x}/{y}",
+  {
+    maxZoom: 19,
+    attribution: "Esri World Imagery"
+  }
+);
+
+// Détection de blocage
+highRes.on("tileerror", () => {
+  document.getElementById("sat-warning").style.display = "block";
+});
 
 /* -----------------------------
    LABELS VECTORIELS OSM
@@ -128,7 +158,7 @@ const osmVector = L.vectorGrid.protobuf(
 const map = L.map('map', {
   minZoom: 2,
   maxZoom: 20,
-  layers: [osmRaster, osmVector]
+  layers: [voyager, osmVector]
 }).setView([20, 0], 2);
 
 /* -----------------------------
@@ -136,8 +166,9 @@ const map = L.map('map', {
 ------------------------------ */
 
 const baseMaps = {
-  "OSM (clair)": osmRaster,
-  "Satellite (Sentinel‑2)": sentinel
+  "OSM Voyager (anglais)": voyager,
+  "Satellite (Sentinel‑2 flou)": sentinel,
+  "Satellite HD (bloqué)": highRes
 };
 
 const overlayMaps = {
@@ -228,45 +259,6 @@ const MeasureControl = L.Control.extend({
 });
 
 new MeasureControl({ position: "topleft" }).addTo(map);
-
-/* -----------------------------
-   LOGIQUE DE MESURE
------------------------------- */
-
-map.on("click", (e) => {
-  if (!measureActive) return;
-
-  if (!startPoint) {
-    startPoint = e.latlng;
-
-    if (tempMarkerA) map.removeLayer(tempMarkerA);
-    if (tempMarkerB) map.removeLayer(tempMarkerB);
-    if (tempLine) map.removeLayer(tempLine);
-
-    tempMarkerA = L.marker(startPoint, { opacity: 0.7 }).addTo(map);
-
-  } else {
-    const endPoint = e.latlng;
-
-    if (tempMarkerB) map.removeLayer(tempMarkerB);
-    tempMarkerB = L.marker(endPoint, { opacity: 0.7 }).addTo(map);
-
-    if (tempLine) map.removeLayer(tempLine);
-    tempLine = L.polyline([startPoint, endPoint], {
-      color: "#00aaff",
-      weight: 3
-    }).addTo(map);
-
-    const d = map.distance(startPoint, endPoint);
-    const txt = d > 1000
-      ? (d / 1000).toFixed(2) + " km"
-      : Math.round(d) + " m";
-
-    tempLine.bindPopup("Distance : " + txt).openPopup();
-
-    startPoint = null;
-  }
-});
 
 /* -----------------------------
    CHARGEMENT GEOJSON
