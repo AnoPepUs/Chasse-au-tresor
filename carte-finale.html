@@ -38,6 +38,27 @@
       width: 150px;
       opacity: 0.8;
       z-index: 9999;
+      transition: transform 0.3s linear;
+    }
+    .rose-tourne { animation: spin 1s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    .measure-btn {
+      background: white;
+      border: 2px solid #666;
+      border-radius: 4px;
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: bold;
+    }
+    .measure-btn:active {
+      background: #007bff;
+      color: white;
     }
 
     #mapproxy-status {
@@ -77,12 +98,12 @@ const satellite = L.tileLayer(
   }
 );
 
-// Labels OSM (optionnel, activable/désactivable)
+// Labels OSM en ANGLAIS (pas chinois)
 const labels = L.tileLayer(
-  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  "https://tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png",
   {
     maxZoom: 19,
-    opacity: 0.5,
+    opacity: 0.6,
     attribution: "© OpenStreetMap"
   }
 );
@@ -102,6 +123,62 @@ L.control.layers(
 // Barre de recherche
 L.Control.geocoder().addTo(map);
 
+// ===== BOUTON RÈGLE =====
+let measureActive = false;
+let measureLine = null;
+let measureMarkers = [];
+
+const MeasureControl = L.Control.extend({
+  onAdd: function() {
+    const btn = L.DomUtil.create("div", "measure-btn leaflet-bar");
+    btn.innerHTML = "📏";
+    btn.title = "Mesurer une distance";
+    
+    btn.onclick = () => {
+      measureActive = !measureActive;
+      if (!measureActive) {
+        // Nettoyer
+        if (measureLine) map.removeLayer(measureLine);
+        measureMarkers.forEach(m => map.removeLayer(m));
+        measureMarkers = [];
+        measureLine = null;
+      }
+    };
+    
+    L.DomEvent.disableClickPropagation(btn);
+    return btn;
+  }
+});
+
+new MeasureControl({ position: "topleft" }).addTo(map);
+
+// Clic sur la carte pour mesurer
+map.on("click", (e) => {
+  if (!measureActive) return;
+  
+  measureMarkers.push(L.marker(e.latlng).addTo(map));
+  
+  if (measureMarkers.length === 2) {
+    const [start, end] = measureMarkers;
+    const distance = map.distance(start.getLatLng(), end.getLatLng());
+    const distanceKm = (distance / 1000).toFixed(2);
+    
+    measureLine = L.polyline([start.getLatLng(), end.getLatLng()], {
+      color: 'red',
+      weight: 3
+    }).addTo(map);
+    
+    L.popup()
+      .setLatLng(end.getLatLng())
+      .setContent(`Distance: ${distanceKm} km`)
+      .openOn(map);
+    
+    // Reset pour nouvelle mesure
+    measureMarkers.forEach(m => map.removeLayer(m));
+    measureMarkers = [];
+  }
+});
+
 // ===== COORDONNÉES =====
 map.on("mousemove", (e) => {
   document.getElementById("coords").innerHTML =
@@ -110,6 +187,32 @@ map.on("mousemove", (e) => {
 
 map.on("zoomend", () => {
   document.getElementById("zoom-level").innerHTML = "Zoom: " + map.getZoom();
+});
+
+// ===== ROSE DES VENTS =====
+const rose = document.getElementById("rose");
+let treasureMarkers = []; // Stocke les marqueurs de trésors
+
+map.on("move", () => {
+  if (treasureMarkers.length === 0) return;
+  
+  let closestDistance = Infinity;
+  const mapCenter = map.getCenter();
+  
+  // Trouver le trésor le plus proche
+  treasureMarkers.forEach(marker => {
+    const d = map.distance(mapCenter, marker.getLatLng());
+    if (d < closestDistance) closestDistance = d;
+  });
+  
+  const z = map.getZoom();
+  
+  // Tourne si zoom >= 10 ET entre 500m et 50km du trésor
+  if (z >= 10 && closestDistance < 50000 && closestDistance > 500) {
+    rose.classList.add("rose-tourne");
+  } else {
+    rose.classList.remove("rose-tourne");
+  }
 });
 
 // ===== MAPPROXY STATUS =====
@@ -145,6 +248,9 @@ fetch("https://anopepus.github.io/Chasse-au-tresor/data/cryptos.geojson")
         });
 
         const marker = L.marker(latlng, { icon });
+        
+        // IMPORTANT : Ajouter à la liste des trésors pour la rose
+        treasureMarkers.push(marker);
 
         map.on("zoomend", () => {
           if (map.getZoom() >= 12) {
