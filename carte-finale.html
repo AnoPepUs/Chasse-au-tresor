@@ -98,19 +98,19 @@ const satellite = L.tileLayer(
   }
 );
 
-// Labels OSM en ANGLAIS (pas chinois)
+// Labels OSM en ANGLAIS (pas chinois) - Semi-transparents
 const labels = L.tileLayer(
-  "https://tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png",
+  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
   {
     maxZoom: 19,
-    opacity: 0.6,
-    attribution: "© OpenStreetMap"
+    opacity: 0.5,
+    attribution: "© OpenStreetMap contributors"
   }
 );
 
 // ===== INIT CARTE =====
 const map = L.map('map', {
-  layers: [satellite]  // Satellite seul par défaut
+  layers: [satellite, labels]  // Satellite + Labels activés par défaut
 }).setView([20, 0], 2);
 
 // ===== CONTROLES =====
