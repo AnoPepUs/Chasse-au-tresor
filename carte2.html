@@ -6,12 +6,16 @@
   <title>Chasse au Trésor Crypto</title>
 
   <!-- Leaflet -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+          crossorigin=""></script>
 
   <!-- Geocoder -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
-  <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder@2.4.0/dist/Control.Geocoder.css" />
+  <script src="https://unpkg.com/leaflet-control-geocoder@2.4.0/dist/Control.Geocoder.js"></script>
 
   <!-- VectorGrid -->
   <script src="https://unpkg.com/leaflet.vectorgrid/dist/Leaflet.VectorGrid.bundled.js"></script>
@@ -113,7 +117,7 @@ const voyager = L.tileLayer(
 
 // ✨ VOTRE MAPPROXY LOCAL - Satellite HD via ProtonVPN
 const mapproxyLocal = L.tileLayer(
-  "http://192.168.1.150:8080/tiles/esri_world_imagery/{z}/{x}/{y}.png",
+  "http://192.168.1.150:8080/wmts/esri_world_imagery/webmercator/{z}/{x}/{y}.png",
   {
     maxZoom: 19,
     attribution: "© Esri via MapProxy local 🔒"
