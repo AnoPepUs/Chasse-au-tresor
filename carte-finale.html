@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="shortcut icon" href="favicon.png" type="image/png">
+  <title>Chasse au Trésor Crypto</title>
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <!-- Geocoder -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder@2.4.0/dist/Control.Geocoder.css" />
+  <script src="https://unpkg.com/leaflet-control-geocoder@2.4.0/dist/Control.Geocoder.js"></script>
+
+  <style>
+    body { margin: 0; padding: 0; }
+    #map { width: 100vw; height: 100vh; }
+
+    #coords, #zoom-level {
+      position: absolute;
+      bottom: 10px;
+      background: white;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 14px;
+      z-index: 9999;
+    }
+    #coords { left: 10px; }
+    #zoom-level { right: 10px; }
+
+    #rose {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      width: 150px;
+      opacity: 0.8;
+      z-index: 9999;
+      transition: transform 0.3s linear;
+    }
+    .rose-tourne { animation: spin 1s linear infinite; }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    .measure-btn {
+      background: white;
+      border: 2px solid #666;
+      border-radius: 4px;
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: bold;
+    }
+    .measure-btn:active {
+      background: #007bff;
+      color: white;
+    }
+
+    #mapproxy-status {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #ddffdd;
+      border: 1px solid #55aa55;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 14px;
+      z-index: 99999;
+    }
+
+    .popup-img { width: 200px; border-radius: 8px; }
+  </style>
+</head>
+
+<body>
+
+<div id="mapproxy-status">🚀 MapProxy local activé !</div>
+<img id="rose" src="https://i.postimg.cc/tTdPt3Sf/rose-sans-fond.png">
+<div id="map"></div>
+<div id="coords">Lat: -- | Lng: --</div>
+<div id="zoom-level">Zoom: --</div>
+
+<script>
+// ===== COUCHES DE CARTE =====
+
+// Satellite Esri MapProxy (zoom 1-17, bonne qualité moyenne)
+const satelliteEsri = L.tileLayer(
+  "http://192.168.1.150:8080/wmts/esri_world_imagery/webmercator/{z}/{x}/{y}.png",
+  {
+    minZoom: 1,
+    maxZoom: 17,
+    attribution: "© Esri via MapProxy 🔒"
+  }
+);
+
+// Satellite Google MapProxy (zoom 18-20, haute résolution pour Nazca)
+const satelliteGoogle = L.tileLayer(
+  "http://192.168.1.150:8080/wmts/google_satellite/webmercator/{z}/{x}/{y}.png",
+  {
+    minZoom: 18,
+    maxZoom: 20,
+    attribution: "© Google via MapProxy 🔒"
+  }
+);
+
+// Labels ArcGIS (villes, routes, frontières) - EN ANGLAIS
+const labels = L.tileLayer(
+  "https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
+  {
+    maxZoom: 19,
+    opacity: 0.7,
+    attribution: "© Esri"
+  }
+);
+
+// ===== INIT CARTE =====
+const map = L.map('map', {
+  layers: [satelliteEsri, satelliteGoogle, labels]  // Les 3 couches actives par défaut
+}).setView([20, 0], 2);
+
+// ===== CONTROLES =====
+const baseMaps = {
+  "🛰️ Satellite (auto-switch Esri/Google)": L.layerGroup([satelliteEsri, satelliteGoogle])
+};
+
+const overlayMaps = {
+  "🏷️ Labels (villes)": labels
+};
+
+L.control.layers(baseMaps, overlayMaps, { collapsed: false }).addTo(map);
+
+// Barre de recherche
+L.Control.geocoder().addTo(map);
+
+// ===== BOUTON RÈGLE =====
+let measureActive = false;
+let measureLine = null;
+let measureMarkers = [];
+
+const MeasureControl = L.Control.extend({
+  onAdd: function() {
+    const btn = L.DomUtil.create("div", "measure-btn leaflet-bar");
+    btn.innerHTML = "📏";
+    btn.title = "Mesurer une distance";
+    
+    btn.onclick = () => {
+      measureActive = !measureActive;
+      if (!measureActive) {
+        // Nettoyer
+        if (measureLine) map.removeLayer(measureLine);
+        measureMarkers.forEach(m => map.removeLayer(m));
+        measureMarkers = [];
+        measureLine = null;
+      }
+    };
+    
+    L.DomEvent.disableClickPropagation(btn);
+    return btn;
+  }
+});
+
+new MeasureControl({ position: "topleft" }).addTo(map);
+
+// Clic sur la carte pour mesurer
+map.on("click", (e) => {
+  if (!measureActive) return;
+  
+  measureMarkers.push(L.marker(e.latlng).addTo(map));
+  
+  if (measureMarkers.length === 2) {
+    const [start, end] = measureMarkers;
+    const distance = map.distance(start.getLatLng(), end.getLatLng());
+    const distanceKm = (distance / 1000).toFixed(2);
+    
+    measureLine = L.polyline([start.getLatLng(), end.getLatLng()], {
+      color: 'red',
+      weight: 3
+    }).addTo(map);
+    
+    L.popup()
+      .setLatLng(end.getLatLng())
+      .setContent(`Distance: ${distanceKm} km`)
+      .openOn(map);
+    
+    // Reset pour nouvelle mesure
+    measureMarkers.forEach(m => map.removeLayer(m));
+    measureMarkers = [];
+  }
+});
+
+// ===== COORDONNÉES =====
+map.on("mousemove", (e) => {
+  document.getElementById("coords").innerHTML =
+    `Lat: ${e.latlng.lat.toFixed(6)} | Lng: ${e.latlng.lng.toFixed(6)}`;
+});
+
+map.on("zoomend", () => {
+  document.getElementById("zoom-level").innerHTML = "Zoom: " + map.getZoom();
+});
+
+// ===== ROSE DES VENTS =====
+const rose = document.getElementById("rose");
+let treasureMarkers = []; // Stocke les marqueurs de trésors
+
+map.on("move", () => {
+  if (treasureMarkers.length === 0) return;
+  
+  let closestDistance = Infinity;
+  const mapCenter = map.getCenter();
+  
+  // Trouver le trésor le plus proche
+  treasureMarkers.forEach(marker => {
+    const d = map.distance(mapCenter, marker.getLatLng());
+    if (d < closestDistance) closestDistance = d;
+  });
+  
+  const z = map.getZoom();
+  
+  // Tourne si zoom >= 10 ET entre 500m et 50km du trésor
+  if (z >= 10 && closestDistance < 50000 && closestDistance > 500) {
+    rose.classList.add("rose-tourne");
+  } else {
+    rose.classList.remove("rose-tourne");
+  }
+});
+
+// ===== MAPPROXY STATUS =====
+let loaded = false;
+
+// Détecter si au moins une des couches charge
+satelliteEsri.on("tileload", () => {
+  loaded = true;
+  setTimeout(() => {
+    document.getElementById("mapproxy-status").style.display = "none";
+  }, 3000);
+});
+
+satelliteGoogle.on("tileload", () => {
+  loaded = true;
+});
+
+satelliteEsri.on("tileerror", () => {
+  if (!loaded) {
+    const status = document.getElementById("mapproxy-status");
+    status.style.background = "#ffdddd";
+    status.style.borderColor = "#ff5555";
+    status.innerHTML = "⚠️ MapProxy inaccessible";
+  }
+});
+
+// ===== CHARGEMENT GEOJSON =====
+fetch("https://anopepus.github.io/Chasse-au-tresor/data/cryptos.geojson")
+  .then(r => r.json())
+  .then(data => {
+    L.geoJSON(data, {
+      pointToLayer: (feature, latlng) => {
+        const p = feature.properties;
+        const icon = L.icon({
+          iconUrl: p.icon,
+          iconSize: [48, 48],
+          iconAnchor: [24, 24],
+          popupAnchor: [0, -24]
+        });
+
+        const marker = L.marker(latlng, { icon });
+        
+        // IMPORTANT : Ajouter à la liste des trésors pour la rose
+        treasureMarkers.push(marker);
+
+        map.on("zoomend", () => {
+          if (map.getZoom() >= 12) {
+            if (!map.hasLayer(marker)) map.addLayer(marker);
+          } else {
+            if (map.hasLayer(marker)) map.removeLayer(marker);
+          }
+        });
+
+        marker.on("click", () => {
+          const distance = map.distance(map.getCenter(), latlng);
+          if (distance <= 500) {
+            marker.bindPopup(`
+              <h3>${p.name}</h3>
+              <img class="popup-img" src="${p.image}" />
+              <br><br>
+              <a href="${p.video}" target="_blank">Voir la vidéo</a>
+            `).openPopup();
+          } else {
+            alert("Tu es trop loin du trésor !");
+          }
+        });
+
+        return marker;
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
