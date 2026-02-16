@@ -89,12 +89,23 @@
 <script>
 // ===== COUCHES DE CARTE =====
 
-// Satellite MapProxy local
-const satellite = L.tileLayer(
+// Satellite Esri MapProxy (zoom 1-17, bonne qualité moyenne)
+const satelliteEsri = L.tileLayer(
   "http://192.168.1.150:8080/wmts/esri_world_imagery/webmercator/{z}/{x}/{y}.png",
   {
-    maxZoom: 19,
+    minZoom: 1,
+    maxZoom: 17,
     attribution: "© Esri via MapProxy 🔒"
+  }
+);
+
+// Satellite Google MapProxy (zoom 18-20, haute résolution pour Nazca)
+const satelliteGoogle = L.tileLayer(
+  "http://192.168.1.150:8080/wmts/google_satellite/webmercator/{z}/{x}/{y}.png",
+  {
+    minZoom: 18,
+    maxZoom: 20,
+    attribution: "© Google via MapProxy 🔒"
   }
 );
 
@@ -110,15 +121,19 @@ const labels = L.tileLayer(
 
 // ===== INIT CARTE =====
 const map = L.map('map', {
-  layers: [satellite, labels]  // Satellite + Labels activés par défaut
+  layers: [satelliteEsri, satelliteGoogle, labels]  // Les 3 couches actives par défaut
 }).setView([20, 0], 2);
 
 // ===== CONTROLES =====
-L.control.layers(
-  { "🛰️ Satellite HD": satellite },
-  { "🏷️ Labels (villes)": labels },
-  { collapsed: false }
-).addTo(map);
+const baseMaps = {
+  "🛰️ Satellite (auto-switch Esri/Google)": L.layerGroup([satelliteEsri, satelliteGoogle])
+};
+
+const overlayMaps = {
+  "🏷️ Labels (villes)": labels
+};
+
+L.control.layers(baseMaps, overlayMaps, { collapsed: false }).addTo(map);
 
 // Barre de recherche
 L.Control.geocoder().addTo(map);
@@ -217,14 +232,20 @@ map.on("move", () => {
 
 // ===== MAPPROXY STATUS =====
 let loaded = false;
-satellite.on("tileload", () => {
+
+// Détecter si au moins une des couches charge
+satelliteEsri.on("tileload", () => {
   loaded = true;
   setTimeout(() => {
     document.getElementById("mapproxy-status").style.display = "none";
   }, 3000);
 });
 
-satellite.on("tileerror", () => {
+satelliteGoogle.on("tileload", () => {
+  loaded = true;
+});
+
+satelliteEsri.on("tileerror", () => {
   if (!loaded) {
     const status = document.getElementById("mapproxy-status");
     status.style.background = "#ffdddd";
