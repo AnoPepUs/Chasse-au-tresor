@@ -56,6 +56,19 @@
         "video": "https://dai.ly/k5wnALZoMb6ltMET1QA",
         "icon": "https://i.postimg.cc/Lqn2LL1D/diamand.gif"
       }
+    },
+     {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [30.410041,19.602865]
+      },
+      "properties": {
+        "name": "BTC",
+        "image": "https://i.postimg.cc/fywGb0Jt/Bitcoin.png",
+        "video": "https://dai.ly/k6smNTlqDAb43dESraU",
+        "icon": "https://i.postimg.cc/Lqn2LL1D/diamand.gif"
+      }
     }
   ]
 }
