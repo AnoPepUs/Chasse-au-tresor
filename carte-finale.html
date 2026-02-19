@@ -75,12 +75,47 @@
     }
 
     .popup-img { width: 200px; border-radius: 8px; }
+    
+    /* Bouton Retour Maison */
+    .home-btn {
+      position: absolute;
+      top: 80px;
+      right: 10px;
+      background: white;
+      border: 2px solid #666;
+      border-radius: 8px;
+      padding: 8px;
+      cursor: pointer;
+      z-index: 9999;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
+    .home-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+    .home-btn img {
+      width: 100px;
+      height: 100px;
+      display: block;
+    }
+    .home-btn-text {
+      margin-top: 5px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #333;
+    }
   </style>
 </head>
 
 <body>
 
 <div id="mapproxy-status">🚀 MapProxy local activé !</div>
+<a href="index.html" class="home-btn" title="Retour à l'accueil">
+  <img src="https://i.postimg.cc/qMC792VP/papillon.gif" alt="Retour maison">
+  <div class="home-btn-text">Retour maison</div>
+</a>
 <img id="rose" src="https://i.postimg.cc/tTdPt3Sf/rose-sans-fond.png">
 <div id="map"></div>
 <div id="coords">Lat: -- | Lng: --</div>
@@ -124,16 +159,7 @@ const map = L.map('map', {
   layers: [satelliteEsri, satelliteGoogle, labels]  // Les 3 couches actives par défaut
 }).setView([20, 0], 2);
 
-// ===== CONTROLES =====
-const baseMaps = {
-  "🛰️ Satellite (auto-switch Esri/Google)": L.layerGroup([satelliteEsri, satelliteGoogle])
-};
-
-const overlayMaps = {
-  "🏷️ Labels (villes)": labels
-};
-
-L.control.layers(baseMaps, overlayMaps, { collapsed: false }).addTo(map);
+// Pas de contrôle de couches (inutile, tout est déjà actif)
 
 // Barre de recherche
 L.Control.geocoder().addTo(map);
