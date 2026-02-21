@@ -69,6 +69,19 @@
         "video": "https://dai.ly/k5vVEjdmCjdhOpEYrBI",
         "icon": "https://i.postimg.cc/Lqn2LL1D/diamand.gif"
       }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-104.573343,35.526727 ]
+      },
+      "properties": {
+        "name": "LINK",
+        "image": "https://i.postimg.cc/Fz9MKJ7D/LINK.png",
+        "video": "https://dai.ly/k23Fpr8W2zGMTwEYtJq",
+        "icon": "https://i.postimg.cc/Lqn2LL1D/diamand.gif"
+      }
     }
   ]
 }
