@@ -82,6 +82,19 @@
         "video": "https://dai.ly/k23Fpr8W2zGMTwEYtJq",
         "icon": "https://i.postimg.cc/Lqn2LL1D/diamand.gif"
       }
+    },
+     {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-64.674658,32.390794,]
+      },
+      "properties": {
+        "name": "AAVE",
+        "image": "https://i.postimg.cc/9MTHndZ9/aave-aave-logo.png",
+        "video": "https://dai.ly/k1lrZji5cHSA7dEYyGA",
+        "icon": "https://i.postimg.cc/Lqn2LL1D/diamand.gif"
+      }
     }
   ]
 }
