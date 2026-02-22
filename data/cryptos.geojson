@@ -87,7 +87,7 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [-64.674658,32.390794,]
+        "coordinates": [-64.674658,32.390794]
       },
       "properties": {
         "name": "AAVE",
