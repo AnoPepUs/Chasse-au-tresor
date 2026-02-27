@@ -126,7 +126,7 @@
 
 // Satellite Esri MapProxy (zoom 1-17, bonne qualité moyenne)
 const satelliteEsri = L.tileLayer(
-  "https://192.168.1.50/wmts/esri_world_imagery/webmercator/{z}/{x}/{y}.png",
+  "https://89.92.214.63:50000/wmts/esri_world_imagery/webmercator/{z}/{x}/{y}.png",
   {
     minZoom: 1,
     maxZoom: 17,
@@ -136,7 +136,7 @@ const satelliteEsri = L.tileLayer(
 
 // Satellite Google MapProxy (zoom 18-20, haute résolution pour Nazca)
 const satelliteGoogle = L.tileLayer(
-  "https://192.168.1.50/wmts/google_satellite/webmercator/{z}/{x}/{y}.png",
+  "https://89.92.214.63:50000/wmts/google_satellite/webmercator/{z}/{x}/{y}.png",
   {
     minZoom: 18,
     maxZoom: 20,
