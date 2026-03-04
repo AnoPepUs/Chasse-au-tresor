@@ -20,7 +20,7 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [145.813208,15.285913]
+        "coordinates": [-214.18208,15.285913]
       },
       "properties": {
         "name": "ETH",
