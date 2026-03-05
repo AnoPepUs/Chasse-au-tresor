@@ -219,8 +219,10 @@ map.on("click", (e) => {
 
 // ===== COORDONNÉES =====
 map.on("mousemove", (e) => {
+  // Convertit la longitude en 0-360 pour cohérence avec le GeoJSON
+  const lng360 = e.latlng.lng < 0 ? e.latlng.lng + 360 : e.latlng.lng;
   document.getElementById("coords").innerHTML =
-    `Lat: ${e.latlng.lat.toFixed(6)} | Lng: ${e.latlng.lng.toFixed(6)}`;
+    `Lat: ${e.latlng.lat.toFixed(6)} | Lng: ${lng360.toFixed(6)}`;
 });
 
 map.on("zoomend", () => {
