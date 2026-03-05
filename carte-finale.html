@@ -148,13 +148,20 @@ const labels = L.tileLayer(
 
 // ===== INIT CARTE =====
 const map = L.map('map', {
-  layers: [satelliteEsri, satelliteGoogle, labels]  // Les 3 couches actives par défaut
+  layers: [satelliteEsri, satelliteGoogle, labels],
+  worldCopyJump: true  // ← Correction : normalise les coordonnées quand on scrolle
 }).setView([20, 0], 2);
-
-// Pas de contrôle de couches (inutile, tout est déjà actif)
 
 // Barre de recherche
 L.Control.geocoder().addTo(map);
+
+// ===== FONCTION UTILITAIRE : normalise la longitude =====
+function normaliserLng(markerLng, centerLng) {
+  let lng = markerLng;
+  while (lng - centerLng > 180) lng -= 360;
+  while (centerLng - lng > 180) lng += 360;
+  return lng;
+}
 
 // ===== BOUTON RÈGLE =====
 let measureActive = false;
@@ -170,7 +177,6 @@ const MeasureControl = L.Control.extend({
     btn.onclick = () => {
       measureActive = !measureActive;
       if (!measureActive) {
-        // Nettoyer
         if (measureLine) map.removeLayer(measureLine);
         measureMarkers.forEach(m => map.removeLayer(m));
         measureMarkers = [];
@@ -206,7 +212,6 @@ map.on("click", (e) => {
       .setContent(`Distance: ${distanceKm} km`)
       .openOn(map);
     
-    // Reset pour nouvelle mesure
     measureMarkers.forEach(m => map.removeLayer(m));
     measureMarkers = [];
   }
@@ -224,7 +229,7 @@ map.on("zoomend", () => {
 
 // ===== ROSE DES VENTS =====
 const rose = document.getElementById("rose");
-let treasureMarkers = []; // Stocke les marqueurs de trésors
+let treasureMarkers = [];
 
 map.on("move", () => {
   if (treasureMarkers.length === 0) return;
@@ -232,15 +237,16 @@ map.on("move", () => {
   let closestDistance = Infinity;
   const mapCenter = map.getCenter();
   
-  // Trouver le trésor le plus proche
   treasureMarkers.forEach(marker => {
-    const d = map.distance(mapCenter, marker.getLatLng());
+    // Correction : normalise la longitude pour le monde répété
+    const adjLng = normaliserLng(marker.getLatLng().lng, mapCenter.lng);
+    const adjLatLng = L.latLng(marker.getLatLng().lat, adjLng);
+    const d = map.distance(mapCenter, adjLatLng);
     if (d < closestDistance) closestDistance = d;
   });
   
   const z = map.getZoom();
   
-  // Tourne si zoom >= 10 ET entre 500m et 50km du trésor
   if (z >= 10 && closestDistance < 50000 && closestDistance > 500) {
     rose.classList.add("rose-tourne");
   } else {
@@ -251,7 +257,6 @@ map.on("move", () => {
 // ===== MAPPROXY STATUS =====
 let loaded = false;
 
-// Détecter si au moins une des couches charge
 satelliteEsri.on("tileload", () => {
   loaded = true;
   setTimeout(() => {
@@ -287,8 +292,6 @@ fetch("https://anopepus.github.io/Chasse-au-tresor/data/cryptos.geojson")
         });
 
         const marker = L.marker(latlng, { icon });
-        
-        // IMPORTANT : Ajouter à la liste des trésors pour la rose
         treasureMarkers.push(marker);
 
         map.on("zoomend", () => {
@@ -300,7 +303,13 @@ fetch("https://anopepus.github.io/Chasse-au-tresor/data/cryptos.geojson")
         });
 
         marker.on("click", () => {
-          const distance = map.distance(map.getCenter(), latlng);
+          const center = map.getCenter();
+
+          // Correction : normalise la longitude pour les mondes répétés
+          const adjLng = normaliserLng(latlng.lng, center.lng);
+          const adjLatLng = L.latLng(latlng.lat, adjLng);
+          const distance = map.distance(center, adjLatLng);
+
           if (distance <= 500) {
             marker.bindPopup(`
               <h3>${p.name}</h3>
