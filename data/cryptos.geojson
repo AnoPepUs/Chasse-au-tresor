@@ -34,7 +34,7 @@
       "type": "Feature",
       "geometry": {
         "type": "Point",
-        "coordinates": [-116.855779,37.561163]
+        "coordinates": [243.153,37.561163]
       },
       "properties": {
         "name": "BNB",
