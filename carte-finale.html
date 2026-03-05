@@ -155,9 +155,15 @@ const map = L.map('map', {
 // Barre de recherche
 L.Control.geocoder().addTo(map);
 
-// ===== FONCTION UTILITAIRE : normalise la longitude =====
+// ===== FONCTION UTILITAIRE : convertit 0-360 en -180/+180 (format Leaflet) =====
+function vers180(lng) {
+  if (lng > 180) lng = lng - 360;
+  return lng;
+}
+
+// ===== FONCTION UTILITAIRE : normalise la longitude pour monde répété =====
 function normaliserLng(markerLng, centerLng) {
-  let lng = markerLng;
+  let lng = vers180(markerLng); // Convertit d'abord en -180/+180
   while (lng - centerLng > 180) lng -= 360;
   while (centerLng - lng > 180) lng += 360;
   return lng;
@@ -217,12 +223,12 @@ map.on("click", (e) => {
   }
 });
 
-// ===== COORDONNÉES =====
+// ===== COORDONNÉES (affichage en 0-360 pour cohérence avec GeoJSON) =====
 map.on("mousemove", (e) => {
-  // Convertit la longitude en 0-360 pour cohérence avec le GeoJSON
-  const lng360 = e.latlng.lng < 0 ? e.latlng.lng + 360 : e.latlng.lng;
+  let lng = e.latlng.lng % 360;
+  if (lng < 0) lng += 360;
   document.getElementById("coords").innerHTML =
-    `Lat: ${e.latlng.lat.toFixed(6)} | Lng: ${lng360.toFixed(6)}`;
+    `Lat: ${e.latlng.lat.toFixed(6)} | Lng: ${lng.toFixed(6)}`;
 });
 
 map.on("zoomend", () => {
