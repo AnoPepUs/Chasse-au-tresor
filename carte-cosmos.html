@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="favicon.png" type="image/png">
+    <title>Explorer le Cosmos - Chasse au Trésor Crypto</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-image: url('https://i.postimg.cc/rFf8h9cK/outerspace-80.gif');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        /* Navigation */
+        nav {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 12px;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            backdrop-filter: blur(4px);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+        nav a:hover { color: #FFD700; }
+        nav a.active { color: #FFD700; border-bottom: 2px solid #FFD700; }
+
+        /* Conteneur principal */
+        .container {
+            margin-top: 80px;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #FFD700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            color: #ccc;
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+
+        /* Layout principal : cyberpunk gauche + stellarium droite */
+        .main-layout {
+            display: flex;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            align-items: flex-start;
+        }
+
+        /* Panneau gauche cyberpunk */
+        .left-panel {
+            flex: 0 0 220px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            backdrop-filter: blur(4px);
+        }
+        .left-panel h3 {
+            color: #FFD700;
+            font-size: 1rem;
+            margin-bottom: 12px;
+            text-shadow: 0 0 8px rgba(255,215,0,0.4);
+        }
+        .cyberpunk-img {
+            width: 100%;
+            max-width: 180px;
+            border-radius: 10px;
+            border: 2px solid #FFD700;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: block;
+            margin: 0 auto 10px;
+        }
+        .cyberpunk-img:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+        }
+        .cyberpunk-label {
+            color: #FFD700;
+            font-size: 0.8rem;
+            font-style: italic;
+            display: block;
+            text-align: center;
+        }
+
+        /* Liens rapides */
+        .quick-links {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .quick-link {
+            display: block;
+            padding: 8px 12px;
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 6px;
+            color: #FFD700;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: bold;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        .quick-link:hover {
+            background: rgba(255, 215, 0, 0.25);
+            box-shadow: 0 0 10px rgba(255,215,0,0.3);
+        }
+
+        /* Panneau Stellarium */
+        .stellarium-panel {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 12px;
+            overflow: hidden;
+            backdrop-filter: blur(4px);
+        }
+        .stellarium-header {
+            background: rgba(0,0,0,0.5);
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255,215,0,0.2);
+        }
+        .stellarium-header span {
+            color: #FFD700;
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+        .stellarium-header a {
+            color: #FFD700;
+            font-size: 0.8rem;
+            text-decoration: none;
+            border: 1px solid #FFD700;
+            padding: 4px 10px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        .stellarium-header a:hover {
+            background: rgba(255,215,0,0.2);
+        }
+        .stellarium-panel iframe {
+            width: 100%;
+            height: 620px;
+            border: none;
+            display: block;
+        }
+
+        /* === MODAL INSTRUCTIONS === */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.88);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-box {
+            background: linear-gradient(135deg, #0a0f1e, #0B1A2E);
+            border: 2px solid #FFD700;
+            border-radius: 14px;
+            padding: 30px;
+            max-width: 580px;
+            width: 92%;
+            max-height: 82vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.3);
+        }
+        .modal-close {
+            position: absolute;
+            top: 12px; right: 16px;
+            font-size: 1.6em;
+            cursor: pointer;
+            color: #FFD700;
+            background: none;
+            border: none;
+            line-height: 1;
+        }
+        .modal-close:hover { color: white; }
+        .modal-box h3 {
+            color: #FFD700;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(255,215,0,0.5);
+        }
+        .modal-step {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 14px;
+            align-items: flex-start;
+            text-align: left;
+        }
+        .modal-step-num {
+            flex-shrink: 0;
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            background: rgba(255,215,0,0.15);
+            border: 2px solid #FFD700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85em;
+            font-weight: 700;
+            color: #FFD700;
+        }
+        .modal-step p {
+            margin: 0;
+            font-size: 0.9em;
+            color: #ddd;
+            padding-top: 4px;
+            line-height: 1.5;
+        }
+        .modal-step p strong { color: #FFD700; }
+        .modal-tip {
+            background: rgba(255,215,0,0.07);
+            border: 1px solid rgba(255,215,0,0.3);
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-size: 0.85em;
+            color: #bbb;
+            margin-top: 15px;
+            text-align: left;
+        }
+        .modal-tip strong { color: #FFD700; }
+        .divider-modal {
+            border: none;
+            border-top: 1px solid rgba(255,215,0,0.2);
+            margin: 15px 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-layout { flex-direction: column; }
+            .left-panel { flex: none; width: 100%; }
+            .stellarium-panel iframe { height: 400px; }
+            nav { gap: 15px; }
+            nav a { font-size: 14px; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <a href="index.html">🏠 Accueil</a>
+        <a href="carte-finale.html">🌍 Explorer la Terre</a>
+        <a href="enigmes.html">💎 Énigmes Planète</a>
+        <a href="carte-cosmos.html" class="active">🔭 Explorer le Cosmos</a>
+        <a href="enigmes-cosmos.html">⭐ Énigmes Cosmos</a>
+    </nav>
+
+    <div class="container">
+        <h1>🔭 Explorer le Cosmos</h1>
+        <p class="subtitle">Pars à la conquête des étoiles pour résoudre les énigmes Cosmos</p>
+
+        <div class="main-layout">
+
+            <!-- PANNEAU GAUCHE : Cyberpunk + instructions -->
+            <div class="left-panel">
+                <h3>🤖 Besoin d'aide ?</h3>
+                <img
+                    src="https://i.postimg.cc/4dWkYNVq/cyperpunk.png"
+                    alt="Guide Stellarium"
+                    class="cyberpunk-img"
+                    onclick="document.getElementById('stelloModal').classList.add('active')"
+                />
+                <span class="cyberpunk-label">🖱️ Clique pour les instructions</span>
+
+                <div class="quick-links">
+                    <a href="https://stellarium-web.org/" target="_blank" class="quick-link">🌟 Ouvrir Stellarium<br><small>en plein écran</small></a>
+                    <a href="enigmes-cosmos.html" class="quick-link">⭐ Voir les Énigmes Cosmos</a>
+                    <a href="enigmes.html" class="quick-link">💎 Énigmes Planète</a>
+                    <a href="carte-finale.html" class="quick-link">🌍 Explorer la Terre</a>
+                </div>
+            </div>
+
+            <!-- PANNEAU DROIT : Stellarium -->
+            <div class="stellarium-panel">
+                <div class="stellarium-header">
+                    <span>🌌 Stellarium Web — Carte du Ciel</span>
+                    <a href="https://stellarium-web.org/" target="_blank">⛶ Plein écran</a>
+                </div>
+                <iframe
+                    src="https://stellarium-web.org/"
+                    title="Stellarium Web"
+                    allowfullscreen>
+                </iframe>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- MODAL INSTRUCTIONS STELLARIUM -->
+    <div class="modal-overlay" id="stelloModal">
+        <div class="modal-box">
+            <button class="modal-close" onclick="document.getElementById('stelloModal').classList.remove('active')">✕</button>
+            <h3>🔭 Comment utiliser Stellarium</h3>
+
+            <div class="modal-step">
+                <div class="modal-step-num">1</div>
+                <p>La carte s'affiche avec un paysage par défaut. <strong>Désactive le paysage</strong> : en bas de l'écran Stellarium, clique sur l'icône <strong>"Landscape"</strong> pour l'éteindre — le sol disparaît et tu vois tout le ciel.</p>
+            </div>
+
+            <div class="modal-step">
+                <div class="modal-step-num">2</div>
+                <p>Active les <strong>constellations</strong> : clique sur l'icône <strong>"Constellations"</strong> en bas — les lignes apparaissent entre les étoiles.</p>
+            </div>
+
+            <div class="modal-step">
+                <div class="modal-step-num">3</div>
+                <p>Active l'<strong>art des constellations</strong> : clique sur <strong>"Constellation art"</strong> juste à côté — les dessins mythologiques apparaissent sur le ciel. Magnifique ! ✨</p>
+            </div>
+
+            <div class="modal-step">
+                <div class="modal-step-num">4</div>
+                <p><strong>Navigue dans le ciel</strong> : clique et glisse pour faire tourner la voûte céleste. Utilise la molette pour zoomer sur une constellation.</p>
+            </div>
+
+            <div class="modal-step">
+                <div class="modal-step-num">5</div>
+                <p><strong>Cherche ta cible</strong> : utilise la barre de recherche 🔍 en haut à droite pour trouver une planète, une étoile ou une constellation directement.</p>
+            </div>
+
+            <div class="modal-step">
+                <div class="modal-step-num">6</div>
+                <p><strong>Clique sur l'objet</strong> : un panneau s'ouvre à gauche avec toutes les informations — magnitude, distance, coordonnées... et un <strong>lien Wikipedia</strong> 📖</p>
+            </div>
+
+            <div class="modal-step">
+                <div class="modal-step-num">7</div>
+                <p><strong>Wikipedia en anglais ?</strong> Pas de panique ! Utilise <a href="https://translate.google.com" target="_blank" style="color:#FFD700;">Google Traduction</a> ou colle l'URL Wikipedia et remplace <code>en.wikipedia</code> par <code>fr.wikipedia</code> pour avoir la version française.</p>
+            </div>
+
+            <hr class="divider-modal">
+
+            <div class="modal-tip">
+                💡 <strong>Astuce :</strong> Si Stellarium te semble trop petit dans la page, clique sur <strong>"Plein écran"</strong> en haut à droite du cadre pour l'ouvrir dans un nouvel onglet avec tout l'espace !
+            </div>
+
+            <div class="modal-tip" style="margin-top:10px;">
+                🌍 <strong>Localisation :</strong> Stellarium utilise ta position géographique pour afficher le ciel de chez toi. Si les étoiles ne correspondent pas à ce que tu cherches, change la localisation dans les paramètres (icône ⚙️ en bas).
+            </div>
+
+            <div style="text-align:center; margin-top:20px;">
+                <button onclick="document.getElementById('stelloModal').classList.remove('active')"
+                    style="padding:10px 25px; background: linear-gradient(135deg, #FFD700, #FFA500); color:black; border:none; border-radius:8px; font-weight:bold; font-size:1em; cursor:pointer;">
+                    🚀 C'est parti !
+                </button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
