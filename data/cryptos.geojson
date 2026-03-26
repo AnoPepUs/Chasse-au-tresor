@@ -108,6 +108,19 @@
         "video": "https://www.dailymotion.com/video/k554mKDbyh55AZFiyS2",
         "icon": "https://i.postimg.cc/Lqn2LL1D/diamand.gif"
       }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [12.301941,46.626270 ]
+      },
+      "properties": {
+        "name": "ADA",
+        "image": "https://i.postimg.cc/85B8DbPM/ada.png",
+        "video": "https://www.dailymotion.com/video/k4ceWxzsZxN1e6FiyS4",
+        "icon": "https://i.postimg.cc/Lqn2LL1D/diamand.gif"
+      }
     }
   ]
 }
