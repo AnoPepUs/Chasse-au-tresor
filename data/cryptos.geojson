@@ -95,6 +95,19 @@
         "video": "https://dai.ly/k1lrZji5cHSA7dEYyGA",
         "icon": "https://i.postimg.cc/Lqn2LL1D/diamand.gif"
       }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-9.085382, 39.604809]
+      },
+      "properties": {
+        "name": "XRP",
+        "image": "https://i.postimg.cc/GmzfzQTH/ripple_xrp_logo.png",
+        "video": "https://www.dailymotion.com/video/k554mKDbyh55AZFiyS2",
+        "icon": "https://i.postimg.cc/Lqn2LL1D/diamand.gif"
+      }
     }
   ]
 }
