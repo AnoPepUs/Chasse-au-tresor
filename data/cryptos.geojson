@@ -121,6 +121,32 @@
         "video": "https://www.dailymotion.com/video/k4ceWxzsZxN1e6FiyS4",
         "icon": "https://i.postimg.cc/Lqn2LL1D/diamand.gif"
       }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-2.117711, 48.077650]
+      },
+      "properties": {
+        "name": "UNI",
+        "image": "https://i.postimg.cc/D029zb8N/UNI.png",
+        "video": "https://www.dailymotion.com/video/k4SC5CUwnSOEpsFp1SW?playlist=xbff6o",
+        "icon": "https://i.postimg.cc/Lqn2LL1D/diamand.gif"
+      }
+    },
+     {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-52.892776, 5.150380]
+      },
+      "properties": {
+        "name": "ICP",
+        "image": "https://i.postimg.cc/yYb1jGWW/internet_computer_icp_logo.png",
+        "video": "https://www.dailymotion.com/playlist/xbff6o",
+        "icon": "https://i.postimg.cc/Lqn2LL1D/diamand.gif"
+      }
     }
   ]
 }
